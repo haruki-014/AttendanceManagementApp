@@ -1,0 +1,139 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>ユーザー管理</title>
+		<link rel="stylesheet" href="${ pageContext.request.contextPath }/style/style.css">
+		<%-- <link rel="stylesheet" href="${ pageContext.request.contextPath }/style/user_management.css"> --%>
+	</head>
+	<body>
+		<div class="container">
+			<h1>ユーザー管理</h1>
+			<p>ようこそ、${ user.userName }さん</p>
+			
+			<div class="main-nav">
+				<a href="${pageContext.request.contextPath}/attendance?action=filter">勤怠履歴管理</a>
+				<a href="${pageContext.request.contextPath}/users?action=list">ユーザー管理</a>
+				<a href="${pageContext.request.contextPath}/logout">ログアウト</a>
+			</div>
+			
+			<c:if test="${ not empty sessionScope.successMessage }">
+				<p class="success-message"><c:out value="${ sessionScope.successMessage }" /></p>
+				<c:remove var="successMessage" scope="session" />
+			</c:if>
+			
+			<h2>ユーザー追加・編集</h2>
+			<form action="${pageContext.request.contextPath}/users" method="post" class="user-form">
+				<input type="hidden" name="action" value="${ userToEdit != null ? 'update' : 'add' }">
+				
+				<c:if test="${ userToEdit != null }">
+					<input type="hidden" name="userName" value="${ userToEdit.userName }">
+				</c:if>
+				
+				<label for="userName">ユーザーID:</label>
+				<input type="text" id="userName" name="userName"
+					value="<c:out value='${ userToEdit.userName }'/>"
+					<c:if test="${ userToEdit != null }">readonly</c:if>
+					required>
+				
+				<label for="password">パスワード:</label>
+				<input type="password" id="password" name="password" <c:if test="${ userToEdit == null }">required</c:if>>
+				<c:if test="${ userToEdit != null }">
+					<p class="error-message">※編集時はパスワードは変更されません。リセットする場合は別途操作してください。</p>
+				</c:if>
+				
+				<label for="role">役割:</label>
+				<select id="role" name="role" required>
+					<option value="employee" <c:if test="${ userToEdit.role == 'employee' }">selected</c:if>>従業員</option>
+					<option value="admin" <c:if test="${ userToEdit.role == 'admin' }">selected</c:if>>管理者</option>
+				</select>
+				
+				<p>
+					<lable for="isENabled">アカウント有効:</lable>
+					<input type="checkbox" id="isEnabled" name="isEnabled" value="true"
+						<c:if test="${ userToEdit == null || userToEdit.isEnabled }">checked</c:if>
+					>
+				</p>
+				<div class="button-group">
+					<input type="submit" 
+						value="<c:choose>
+						<c:when test='${ userToEdit != null }'>更新</c:when>
+						<c:otherwise>追加</c:otherwise></c:choose>">
+				</div>
+			</form>
+			
+			
+			<c:if test="${ userToEdit != null }">
+				<form action="${pageContext.request.contextPath}/users" method="post" style="displsy:inline;">
+					<input type="hidden" name="action" value="reset_password">
+					<input type="hidden" name="userName" value="${ userToEdit.userName }">
+					<input type="hidden" name="newPassword" value="password">
+					<input type="submit" value="パスワードをリセット" class="button secondary"
+						onclick="return confirm('本当にパスワードをリセットしますか？(デフォルトパスワード: passwprd)');">
+				</form>
+			</c:if>
+			
+			
+			<p class="error-message"><c:out value="${ errorMessage }" /></p>
+			
+			<h2>既存ユーザー</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>ユーザーID</th>
+						<th>役割</th>
+						<th>有効</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="u" items="${ users }">
+						<tr>
+							<td>${ u.userName }</td>
+							<td>${ u.role }</td>
+							<td>
+								<form action="${pageContext.request.contextPath}/users" method="post" class="existing-users">
+									<input type="hidden" name="action" value="toggle_enabled">
+									<input type="hidden" name="userName" value="${ u.userName }">
+									<input  type="hidden" name="isEnabled" value="${ u.enabled }">
+									<input type="submit" 
+										value="<c:choose>
+													<c:when test="${ u.enabled }">無効化</c:when>
+													<c:otherwise>有効化</c:otherwise>
+												</c:choose>"
+										class="button 
+												<c:choose>
+													<c:when test='${ u.enabled }'>danger</c:when>
+													<c:otherwise>secondary</c:otherwise>
+												</c:choose>"
+										onclick="return confirm('本当にこのユーザーを
+													<c:choose>
+														<c:when test="${ u.enabled }">無効</c:when>
+														<c:otherwise>有効</c:otherwise>
+													</c:choose>
+													にしますか？');">
+								</form>
+							</td>
+							<td class="table-actions">
+								<a href="users?action=test&userName=${ u.userName }" class="button">編集</a>
+								<form action="users" method="post" style="display:inline;">
+									<input type="hidden" name="action" value="delete">
+									<input type="hidden" name="userName" value="${ u.userName }">
+									<input type="submit" value="削除" class="button danger"
+											onclick="return confirm('本当にこのユーザーを削除しますか？');">
+								</form>
+							</td>
+						</tr>
+					</c:forEach>
+					<c:if test="${ empty users }">
+						<tr><td colspan="4">ユーザーがいません</td></tr>
+					</c:if>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>
+
