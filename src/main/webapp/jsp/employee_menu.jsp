@@ -10,7 +10,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>従業員メニュー</h1>
+			<h1>従業員メニュー画面</h1>
 			<p>ようこそ、${ user.name }さん</p>
 			
 			<c:if test="${ not empty sessionScope.successMessage }">

@@ -10,7 +10,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>管理者メニュー</h1>
+			<h1>管理者メニュー画面</h1>
 			<p>ようこそ、${ user.name } さん（管理者）</p>
 			
 			<div class="main-nav">

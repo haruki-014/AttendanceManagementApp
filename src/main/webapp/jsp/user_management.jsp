@@ -11,7 +11,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>ユーザー管理</h1>
+			<h1>ユーザー管理画面</h1>
 			<p>ようこそ、${ user.name }さん</p>
 			
 			<div class="main-nav">

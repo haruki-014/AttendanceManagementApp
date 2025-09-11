@@ -32,16 +32,6 @@ public class LoginServlet extends HttpServlet {
 		String password = request.getParameter("password");
 		User user = userDAO.findByUserName(userName);
 		
-		System.out.println("入力ユーザー: " + userName);
-		System.out.println("入力パスワード: " + password);
-		if (user != null) {
-			System.out.println("DBハッシュ: " + user.getPassword());
-		} else {
-			System.out.println("This user is not exist.");
-		}
-		System.out.println("入力パスワードのハッシュ: " + UserDAO.hashPassword(password));
-
-		
 		/* ユーザーが登録されている、ユーザーの有効化が正、パスワードのハッシュ化がなされている、全てを満たす時
 			セッションに成功メッセージをセット
 		*/
