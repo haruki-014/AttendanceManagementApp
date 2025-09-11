@@ -46,8 +46,8 @@ public class UserServlet extends HttpServlet {
 			rd.forward(request, response);
 			
 		} else if ("edit".equals(action)) {
-			String userName = request.getParameter("userName");
-			User user = userDAO.findByUserName(userName);
+			String name = request.getParameter("name");
+			User user = userDAO.findByName(name);
 			request.setAttribute("userToEdit", user);
 			Collection<User> users = userDAO.getAllUsers();
 			request.setAttribute("users", users);
@@ -65,26 +65,35 @@ public class UserServlet extends HttpServlet {
 		String action = request.getParameter("action");
 		System.out.println(">>> doPost called, action=" + action);
 		HttpSession session = request.getSession(false);
+		
+		if (session == null) {
+		    System.out.println(">>> session is null");
+		} else {
+			System.out.println(">>> session is not null");
+		}
+		
 		User currentUser = (User) session.getAttribute("user");
 		
 		if (currentUser == null || !"admin".equals(currentUser.getRole())) {
-			response.sendRedirect("login.jsp");
+			response.sendRedirect(request.getContextPath() + "login.jsp");
 			return;
 		}
 		
+		System.out.println("user=true");
+		
 		if ("add".equals(action)) {
-			String userName = request.getParameter("userName");
+			String name = request.getParameter("name");
 			String password = request.getParameter("password");
 			String role = request.getParameter("role");
 			
-			System.out.println(userName);
+			System.out.println(name);
 			System.out.println(password);
 			System.out.println(role);
 			
-			if (userDAO.findByUserName(userName) == null) {
+			if (userDAO.findByName(name) == null) {
 				userDAO.addUser(
 						new User(
-								userName, password, role
+								name, password, role
 							)
 						);
 				session.setAttribute("successMessage", "ユーザーを追加しました");
@@ -94,38 +103,40 @@ public class UserServlet extends HttpServlet {
 			}
 			
 		} else if ("update".equals(action)) {
-			String userName = request.getParameter("userName");
+			int id = Integer.parseInt(request.getParameter("id"));
+			System.out.println(id);
+			String name = request.getParameter("name");
 			String role = request.getParameter("role");
-			boolean isEnabled = request.getParameter("isEnabled") != null;
+			boolean isEnabled = request.getParameter("enabled") != null;
 			
-			User existingUser = userDAO.findByUserName(userName);
+			User existingUser = userDAO.findById(id);
 			
 			if (existingUser != null) {
 				userDAO.updateUser(
-						new User(userName, existingUser.getPassword(), role, isEnabled)
+						new User(id, name, existingUser.getPassword(), role, isEnabled)
 						);
 				session.setAttribute("successMessage", "ユーザー情報を更新しました");
 			}
 			
 		} else if ("delete".equals(action)) {
-			String userName = request.getParameter("userName");
-			userDAO.deleteUser(userName);
+			String name = request.getParameter("name");
+			userDAO.deleteUser(name);
 			session.setAttribute("successMessage", "ユーザーを削除しました");
 			
 		} else if ("reset_password".equals(action)) {
-			String userName = request.getParameter("userName");
+			String name = request.getParameter("name");
 			String newPassword = request.getParameter("newPassword");
-			userDAO.resetPassword(userName, newPassword);
+			userDAO.resetPassword(name, newPassword);
 			session.setAttribute(
-					"successMessage", userName + "のパスワードをリセットしました　新しいパスワードは" + newPassword + "です");
+					"successMessage", name + "のパスワードをリセットしました　新しいパスワードは" + newPassword + "です");
 			
 		} else if ("toggle_enabled".equals(action)) {
-			String userName = request.getParameter("userName");
+			String name = request.getParameter("name");
 			boolean isEnabled = Boolean.parseBoolean(request.getParameter("isEnabled"));
-			userDAO.toggleUserEnabled(userName, isEnabled);
-			session.setAttribute("successMessage", userName + "のアカウントを" + (isEnabled ? "有効" : "無効") + "にしました");
+			userDAO.toggleUserEnabled(name, isEnabled);
+			session.setAttribute("successMessage", name + "のアカウントを" + (isEnabled ? "有効" : "無効") + "にしました");
 		}	
-		response.sendRedirect("users?action=list");
+		response.sendRedirect(request.getContextPath() + "/users?action=list");
 		
 	}
 }

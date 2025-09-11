@@ -67,6 +67,28 @@ public class UserDAO {
         }
         return null;
     }
+    
+    public User findById(int id) {
+        String sql = "SELECT id, name, password, role, is_enabled FROM users WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new User(
+                    	rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getBoolean("is_enabled")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public boolean verifyPassword(String name, String password) {
         User user = findByName(name);
@@ -131,14 +153,15 @@ public class UserDAO {
     }
     */
     public void updateUser(User user) {
-        String sql = "UPDATE users SET password = ?, role = ?, is_enabled = ? WHERE name = ?";
+        String sql = "UPDATE users SET name = ?, role = ?, is_enabled = ? WHERE id = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, hashPassword(user.getPassword()));
+        	ps.setString(1, user.getName());
             ps.setString(2, user.getRole());
             ps.setBoolean(3, user.isEnabled());
-            ps.setString(4, user.getName());
-            ps.executeUpdate();
+            ps.setInt(4, user.getId());
+            int rows = ps.executeUpdate();
+            System.out.println(">>> update rows = " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
         }
