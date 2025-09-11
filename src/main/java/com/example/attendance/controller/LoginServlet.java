@@ -27,14 +27,19 @@ public class LoginServlet extends HttpServlet {
     
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		String userName = request.getParameter("userName");
 		String password = request.getParameter("password");
 		User user = userDAO.findByUserName(userName);
 		
-//		System.out.println("入力ユーザー: " + userName);
-//		System.out.println("入力パスワード: " + password);
-//		System.out.println("DBハッシュ: " + user.getPassword());
-//		System.out.println("入力パスワードのハッシュ: " + UserDAO.hashPassword(password));
+		System.out.println("入力ユーザー: " + userName);
+		System.out.println("入力パスワード: " + password);
+		if (user != null) {
+			System.out.println("DBハッシュ: " + user.getPassword());
+		} else {
+			System.out.println("This user is not exist.");
+		}
+		System.out.println("入力パスワードのハッシュ: " + UserDAO.hashPassword(password));
 
 		
 		/* ユーザーが登録されている、ユーザーの有効化が正、パスワードのハッシュ化がなされている、全てを満たす時
@@ -70,7 +75,7 @@ public class LoginServlet extends HttpServlet {
 			} else {
 				request.setAttribute(
 						"attendanceRecords",
-						attendanceDAO.findByUserId(user.getUserName())
+						attendanceDAO.findByUserId(user.getName())
 						);
 				RequestDispatcher rd = request.getRequestDispatcher("jsp/employee_menu.jsp");
 				rd.forward(request, response);

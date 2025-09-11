@@ -12,7 +12,7 @@
 	<body>
 		<div class="container">
 			<h1>ユーザー管理</h1>
-			<p>ようこそ、${ user.userName }さん</p>
+			<p>ようこそ、${ user.name }さん</p>
 			
 			<div class="main-nav">
 				<a href="${pageContext.request.contextPath}/attendance?action=filter">勤怠履歴管理</a>
@@ -92,12 +92,12 @@
 				<tbody>
 					<c:forEach var="u" items="${ users }">
 						<tr>
-							<td>${ u.userName }</td>
+							<td>${ u.name }</td>
 							<td>${ u.role }</td>
 							<td>
 								<form action="${pageContext.request.contextPath}/users" method="post" class="existing-users">
 									<input type="hidden" name="action" value="toggle_enabled">
-									<input type="hidden" name="userName" value="${ u.userName }">
+									<input type="hidden" name="userName" value="${ u.name }">
 									<input  type="hidden" name="isEnabled" value="${ u.enabled }">
 									<input type="submit" 
 										value="<c:choose>
@@ -118,10 +118,10 @@
 								</form>
 							</td>
 							<td class="table-actions">
-								<a href="users?action=test&userName=${ u.userName }" class="button">編集</a>
+								<a href="users?action=test&userName=${ u.name }" class="button">編集</a>
 								<form action="users" method="post" style="display:inline;">
 									<input type="hidden" name="action" value="delete">
-									<input type="hidden" name="userName" value="${ u.userName }">
+									<input type="hidden" name="userName" value="${ u.name }">
 									<input type="submit" value="削除" class="button danger"
 											onclick="return confirm('本当にこのユーザーを削除しますか？');">
 								</form>
