@@ -15,7 +15,7 @@
 			<form action="login" method="post">
 				<p>
 					<label for="userName">ユーザーID: </label>
-					<input type="text" id="userName" name="userName" required>
+					<input type="text" id="name" name="name" required>
 				</p>
 				<p>
 					<label for="password">パスワード: </label>

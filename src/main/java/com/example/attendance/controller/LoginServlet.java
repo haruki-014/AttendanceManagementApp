@@ -28,14 +28,14 @@ public class LoginServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String userName = request.getParameter("userName");
+		String name = request.getParameter("name");
 		String password = request.getParameter("password");
-		User user = userDAO.findByUserName(userName);
+		User user = userDAO.findByName(name);
 		
 		/* ユーザーが登録されている、ユーザーの有効化が正、パスワードのハッシュ化がなされている、全てを満たす時
 			セッションに成功メッセージをセット
 		*/
-		if (user != null && user.isEnabled() && userDAO.verifyPassword(userName, password)) {
+		if (user != null && user.isEnabled() && userDAO.verifyPassword(name, password)) {
 			HttpSession session = request.getSession();
 			session.setAttribute("user", user);
 			session.setAttribute("successMessage", "ログインしました");

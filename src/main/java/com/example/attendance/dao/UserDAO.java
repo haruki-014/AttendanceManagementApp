@@ -46,7 +46,7 @@ public class UserDAO {
     }
     */
     // 【変更後】DB検索
-    public User findByUserName(String name) {
+    public User findByName(String name) {
         String sql = "SELECT id, name, password, role, is_enabled FROM users WHERE name = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -69,7 +69,7 @@ public class UserDAO {
     }
 
     public boolean verifyPassword(String name, String password) {
-        User user = findByUserName(name);
+        User user = findByName(name);
         return user != null && user.isEnabled() && user.getPassword().equals(hashPassword(password));
     }
 
