@@ -7,7 +7,6 @@
 		<meta charset="UTF-8">
 		<title>勤怠管理システム - ログイン</title>
 		<link rel="stylesheet" href="${ pageContext.request.contextPath }/style/style.css">
-		<%-- <link rel="stylesheet" href="${ pageContext.request.contextPath }/style/login.css"> --%>
 	</head>
 	<body>
 		<div class="container">
@@ -15,11 +14,11 @@
 			<form action="login" method="post">
 				<p>
 					<label for="userName">ユーザーID: </label>
-					<input type="text" id="name" name="name" required>
+					<input type="text" id="name" name="name" placeholder="yamadatarou" autofocus required>
 				</p>
 				<p>
 					<label for="password">パスワード: </label>
-					<input type="password" id="password" name="password" required>
+					<input type="password" id="password" name="password" placeholder="password" required>
 				</p>
 				<div class="button-group">
 					<input type="submit" value="ログイン">
