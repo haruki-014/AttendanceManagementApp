@@ -79,16 +79,10 @@ public class UserServlet extends HttpServlet {
 			return;
 		}
 		
-		System.out.println("user=true");
-		
 		if ("add".equals(action)) {
 			String name = request.getParameter("name");
 			String password = request.getParameter("password");
 			String role = request.getParameter("role");
-			
-			System.out.println(name);
-			System.out.println(password);
-			System.out.println(role);
 			
 			if (userDAO.findByName(name) == null) {
 				userDAO.addUser(
@@ -132,10 +126,13 @@ public class UserServlet extends HttpServlet {
 			
 		} else if ("toggle_enabled".equals(action)) {
 			String name = request.getParameter("name");
-			boolean isEnabled = Boolean.parseBoolean(request.getParameter("isEnabled"));
-			userDAO.toggleUserEnabled(name, isEnabled);
-			session.setAttribute("successMessage", name + "のアカウントを" + (isEnabled ? "有効" : "無効") + "にしました");
-		}	
+			boolean isEnabled = Boolean.parseBoolean(request.getParameter("enabled"));
+			System.out.println(name + isEnabled);
+			Boolean newEnabled = ! isEnabled;
+			userDAO.toggleUserEnabled(name, newEnabled);
+			session.setAttribute("successMessage", name + "のアカウントを" + (newEnabled ? "有効" : "無効") + "にしました");
+		}
+		
 		response.sendRedirect(request.getContextPath() + "/users?action=list");
 		
 	}

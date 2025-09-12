@@ -20,9 +20,8 @@
 				<a href="${pageContext.request.contextPath}/logout">ログアウト</a>
 			</div>
 			
-			<c:if test="${ not empty sessionScope.successMessage }">
-				<p class="success-message"><c:out value="${ sessionScope.successMessage }" /></p>
-				<c:remove var="successMessage" scope="session" />
+			<c:if test="${ not empty successMessage }">
+				<p class="success-message"><c:out value="${ successMessage }" /></p>
 			</c:if>
 			
 			<h2>ユーザー追加・編集</h2>
@@ -103,26 +102,25 @@
 							<td>${ u.name }</td>
 							<td>${ u.role }</td>
 							<td>
+								<c:choose>
+									<c:when test="${ u.enabled }">
+										<c:set var="submitValue" value="無効化" />
+										<c:set var="submitClass" value="danger" />
+										<c:set var="submitOnClick" value="無効" />
+									</c:when>
+									<c:otherwise>
+										<c:set var="submitValue" value="有効化" />
+										<c:set var="submitClass" value="secondary" />
+										<c:set var="submitOnClick" value="有効" />
+									</c:otherwise>
+								</c:choose>
 								<form action="${pageContext.request.contextPath}/users" method="post" class="existing-users">
 									<input type="hidden" name="action" value="toggle_enabled">
 									<input type="hidden" name="name" value="${ u.name }">
 									<input  type="hidden" name="enabled" value="${ u.enabled }">
-									<input type="submit" 
-										value="<c:choose>
-													<c:when test="${ u.enabled }">無効化</c:when>
-													<c:otherwise>有効化</c:otherwise>
-												</c:choose>"
-										class="button 
-												<c:choose>
-													<c:when test='${ u.enabled }'>danger</c:when>
-													<c:otherwise>secondary</c:otherwise>
-												</c:choose>"
-										onclick="return confirm('本当にこのユーザーを
-													<c:choose>
-														<c:when test="${ u.enabled }">無効</c:when>
-														<c:otherwise>有効</c:otherwise>
-													</c:choose>
-													にしますか？');">
+									<input type="submit" value="${ submitValue }"
+										class="button ${ submitClass }"
+										onclick="return confirm('本当にこのユーザーを${ submitOnClick }にしますか？');">
 								</form>
 							</td>
 							<td class="table-actions">
