@@ -45,8 +45,13 @@ public class UserDAO {
     }
     */
     // 【変更後】DB検索
+<<<<<<< HEAD
     public User findByUserName(String userName) {
         String sql = "SELECT user_name, password, role, is_enabled FROM users WHERE user_name = ?";
+=======
+    public User findByName(String name) {
+        String sql = "SELECT id, name, password, role, is_enabled FROM users WHERE name = ?";
+>>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, userName);
@@ -65,9 +70,36 @@ public class UserDAO {
         }
         return null;
     }
+    
+    public User findById(int id) {
+        String sql = "SELECT id, name, password, role, is_enabled FROM users WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new User(
+                    	rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getBoolean("is_enabled")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
+<<<<<<< HEAD
     public boolean verifyPassword(String userName, String password) {
         User user = findByUserName(userName);
+=======
+    public boolean verifyPassword(String name, String password) {
+        User user = findByName(name);
+>>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
         return user != null && user.isEnabled() && user.getPassword().equals(hashPassword(password));
     }
 
@@ -128,14 +160,24 @@ public class UserDAO {
     }
     */
     public void updateUser(User user) {
+<<<<<<< HEAD
         String sql = "UPDATE users SET password = ?, role = ?, is_enabled = ? WHERE user_name = ?";
+=======
+        String sql = "UPDATE users SET name = ?, role = ?, is_enabled = ? WHERE id = ?";
+>>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, hashPassword(user.getPassword()));
+        	ps.setString(1, user.getName());
             ps.setString(2, user.getRole());
             ps.setBoolean(3, user.isEnabled());
+<<<<<<< HEAD
             ps.setString(4, user.getUserName());
             ps.executeUpdate();
+=======
+            ps.setInt(4, user.getId());
+            int rows = ps.executeUpdate();
+            System.out.println(">>> update rows = " + rows);
+>>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
         } catch (SQLException e) {
             e.printStackTrace();
         }
