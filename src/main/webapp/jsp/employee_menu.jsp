@@ -6,12 +6,12 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>従業員メニュー</title>
-		<link rel="stylesheet" href="${ pageContext.request.contextPath }/style.css">
+		<link rel="stylesheet" href="${ pageContext.request.contextPath }/style/style.css">
 	</head>
 	<body>
 		<div class="container">
-			<h1>従業員メニュー</h1>
-			<p>ようこそ、${ user.userName }さん</p>
+			<h1>従業員メニュー画面</h1>
+			<p>ようこそ、${ user.name }さん</p>
 			
 			<c:if test="${ not empty sessionScope.successMessage }">
 				<p class="success-message"><c:out value="${ sessionScope.successMessage }" /></p>

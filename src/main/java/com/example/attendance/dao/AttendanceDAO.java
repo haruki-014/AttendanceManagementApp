@@ -1,5 +1,9 @@
 package com.example.attendance.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -11,23 +15,67 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import com.example.attendance.dto.Attendance;
+import com.example.attendance.util.DBConnection;
 
 public class AttendanceDAO {
 	
-	/* ConcurrentLinkedQueue, Collections.synchronizedList(new ArrayList<> */
+	/* ローカル管理時 */
 	private static final List<Attendance> attendanceRecords = new CopyOnWriteArrayList<>();
 	
 	public void checkIn(String userId) {
-		Attendance attendance = new Attendance(userId);
-		attendance.setCheckInTime(LocalDateTime.now());
-		attendanceRecords.add(attendance);
+		
+		/* ローカル管理時 */
+//		Attendance attendance = new Attendance(userId);
+//		attendance.setCheckInTime(LocalDateTime.now());
+//		attendanceRecords.add(attendance);
+		
+		String sql = "INSERT INTO attendance (user_name, check_in_time) VALUES (?, ?)";
+		
+		try (Connection conn = DBConnection.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setString(1, userId);
+			ps.setObject(2, LocalDateTime.now());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void checkOut(String userId) {
-		attendanceRecords.stream()
-				.filter(att -> userId.equals(att.getUserId()) && att.getCheckOutTime() == null) 
-				.findFirst()
-				.ifPresent(att -> att.setCheckOutTime(LocalDateTime.now()));
+		
+		/* ローカル管理時 */
+//		attendanceRecords.stream()
+//				.filter(att -> userId.equals(att.getUserId()) && att.getCheckOutTime() == null) 
+//				.findFirst()
+//				.ifPresent(att -> att.setCheckOutTime(LocalDateTime.now()));
+		
+        String selectSql = """
+                SELECT id FROM attendance
+                WHERE user_name = ? AND check_out_time IS NULL
+                ORDER BY check_in_time DESC
+                LIMIT 1
+                """;
+        String updateSql = "UPDATE attendance SET check_out_time = ? WHERE id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement selectPs = conn.prepareStatement(selectSql)) {
+
+            selectPs.setString(1, userId);
+            ResultSet rs = selectPs.executeQuery();
+
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                try (PreparedStatement updatePs = conn.prepareStatement(updateSql)) {
+                    updatePs.setObject(1, LocalDateTime.now());
+                    updatePs.setInt(2, id);
+                    updatePs.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+		
 	}
 	
 	public List<Attendance> findByUserId(String userId) {

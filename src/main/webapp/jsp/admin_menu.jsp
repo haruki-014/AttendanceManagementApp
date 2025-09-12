@@ -6,12 +6,12 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>管理者メニュー</title>
-		<link rel="stylesheet" href="${ pageContext.request.contextPath }/style.css">
+		<link rel="stylesheet" href="${ pageContext.request.contextPath }/style/style.css">
 	</head>
 	<body>
 		<div class="container">
-			<h1>管理者メニュー</h1>
-			<p>ようこそ、${ user.userName } さん（管理者）</p>
+			<h1>管理者メニュー画面</h1>
+			<p>ようこそ、${ user.name } さん（管理者）</p>
 			
 			<div class="main-nav">
 				<a href="${pageContext.request.contextPath}/attendance?action=filter">勤怠履歴管理</a>

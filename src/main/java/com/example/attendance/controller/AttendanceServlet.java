@@ -103,7 +103,7 @@ public class AttendanceServlet extends HttpServlet {
 		} else {
 			request.setAttribute(
 					"attendanceRecords",
-					attendanceDAO.findByUserId(user.getUserName())
+					attendanceDAO.findByUserId(user.getName())
 					);
 			RequestDispatcher rd = request.getRequestDispatcher("/jsp/employee_menu.jsp");
 			rd.forward(request, response);
@@ -124,10 +124,10 @@ public class AttendanceServlet extends HttpServlet {
 		String action = request.getParameter("action");
 		
 		if ("checkIn".equals(action)) {
-			attendanceDAO.checkIn(user.getUserName());
+			attendanceDAO.checkIn(user.getName());
 			session.setAttribute("successMessage", "出勤を確認しました");
 		} else if ("checkOut".equals(action)) {
-			attendanceDAO.checkOut(user.getUserName());
+			attendanceDAO.checkOut(user.getName());
 			session.setAttribute("successMessage", "退勤を確認しました");
 		} else if ("add_manual".equals(action) && "admin".equals(user.getRole())) {
 			String userId = request.getParameter("userId");
