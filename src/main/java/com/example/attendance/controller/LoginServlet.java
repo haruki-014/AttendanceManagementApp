@@ -27,24 +27,13 @@ public class LoginServlet extends HttpServlet {
     
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-<<<<<<< HEAD
-		String userName = request.getParameter("userName");
-=======
-		
-		String name = request.getParameter("name");
->>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
-		String password = request.getParameter("password");
-<<<<<<< HEAD
-		User user = userDAO.findByUserName(userName);
-		
-//		System.out.println("入力ユーザー: " + userName);
-//		System.out.println("入力パスワード: " + password);
-//		System.out.println("DBハッシュ: " + user.getPassword());
-//		System.out.println("入力パスワードのハッシュ: " + UserDAO.hashPassword(password));
 
-=======
+		String name = request.getParameter("name");
+
+		String password = request.getParameter("password");
+
 		User user = userDAO.findByName(name);
->>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
+
 		
 		/* ユーザーが登録されている、ユーザーの有効化が正、パスワードのハッシュ化がなされている、全てを満たす時
 			セッションに成功メッセージをセット
@@ -79,7 +68,7 @@ public class LoginServlet extends HttpServlet {
 			} else {
 				request.setAttribute(
 						"attendanceRecords",
-						attendanceDAO.findByUserId(user.getUserName())
+						attendanceDAO.findByUserId(user.getName())
 						);
 				RequestDispatcher rd = request.getRequestDispatcher("jsp/employee_menu.jsp");
 				rd.forward(request, response);

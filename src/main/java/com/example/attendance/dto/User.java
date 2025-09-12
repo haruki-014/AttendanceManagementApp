@@ -18,32 +18,25 @@ Referenced by:
 
 public class User {
 	
-	private String userName;
+	private int id;
+	private String name;
 	private String password;
 	private String role;
 	private boolean isEnabled;
 	
-	public User(String userName, String password, String role) {
-		this(userName, password, role, true);
+	public User(String name, String password, String role) {
+		this(name, password, role, true);
 	}
 	
-<<<<<<< HEAD
-	public User(String userName, String password, String role, boolean isEnabled) {
-		this.userName = userName;
-=======
 	/* ユーザー作成時 */
 	public User(String name, String password, String role, boolean isEnabled) {
 		this.name = name;
->>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
 		this.password = password;
 		this.role = role;
 		this.isEnabled = isEnabled;
 	}
 	
-<<<<<<< HEAD
-	public String getUserName() {
-		return userName;
-=======
+
 	/* ログイン時 */
 	public User(int id, String name, String password, String role, boolean isEnabled) {
 		this.id = id;
@@ -63,7 +56,7 @@ public class User {
 	
 	public String getName() {
 		return name;
->>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
+
 	}
 	
 	public String getPassword() {
