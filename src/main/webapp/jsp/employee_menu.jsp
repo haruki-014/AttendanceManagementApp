@@ -10,8 +10,13 @@
 	</head>
 	<body>
 		<div class="container">
+<<<<<<< HEAD
+			<h1>従業員メニュー</h1>
+			<p>ようこそ、${ user.userName }さん</p>
+=======
 			<h1>従業員メニュー画面</h1>
 			<p>ようこそ、${ user.name }さん</p>
+>>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
 			
 			<c:if test="${ not empty sessionScope.successMessage }">
 				<p class="success-message"><c:out value="${ sessionScope.successMessage }" /></p>

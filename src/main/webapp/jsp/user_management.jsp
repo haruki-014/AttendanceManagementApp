@@ -11,8 +11,13 @@
 	</head>
 	<body>
 		<div class="container">
+<<<<<<< HEAD
+			<h1>ユーザー管理</h1>
+			<p>ようこそ、${ user.userName }さん</p>
+=======
 			<h1>ユーザー管理画面</h1>
 			<p>ようこそ、${ user.name }さん</p>
+>>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
 			
 			<div class="main-nav">
 				<a href="${pageContext.request.contextPath}/attendance?action=filter">勤怠履歴管理</a>
@@ -99,7 +104,7 @@
 				<tbody>
 					<c:forEach var="u" items="${ users }">
 						<tr>
-							<td>${ u.name }</td>
+							<td>${ u.userName }</td>
 							<td>${ u.role }</td>
 							<td>
 								<c:choose>
@@ -116,18 +121,47 @@
 								</c:choose>
 								<form action="${pageContext.request.contextPath}/users" method="post" class="existing-users">
 									<input type="hidden" name="action" value="toggle_enabled">
+<<<<<<< HEAD
+									<input type="hidden" name="userName" value="${ u.userName }">
+									<input  type="hidden" name="isEnabled" value="${ u.enabled }">
+									<input type="submit" 
+										value="<c:choose>
+													<c:when test="${ u.enabled }">無効化</c:when>
+													<c:otherwise>有効化</c:otherwise>
+												</c:choose>"
+										class="button 
+												<c:choose>
+													<c:when test='${ u.enabled }'>danger</c:when>
+													<c:otherwise>secondary</c:otherwise>
+												</c:choose>"
+										onclick="return confirm('本当にこのユーザーを
+													<c:choose>
+														<c:when test="${ u.enabled }">無効</c:when>
+														<c:otherwise>有効</c:otherwise>
+													</c:choose>
+													にしますか？');">
+=======
 									<input type="hidden" name="name" value="${ u.name }">
 									<input  type="hidden" name="enabled" value="${ u.enabled }">
 									<input type="submit" value="${ submitValue }"
 										class="button ${ submitClass }"
 										onclick="return confirm('本当にこのユーザーを${ submitOnClick }にしますか？');">
+>>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
 								</form>
 							</td>
 							<td class="table-actions">
+<<<<<<< HEAD
+								<a href="users?action=test&userName=${ u.userName }" class="button">編集</a>
+=======
 								<a href="users?action=edit&name=${ u.name }" class="button">編集</a>
+>>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
 								<form action="users" method="post" style="display:inline;">
 									<input type="hidden" name="action" value="delete">
+<<<<<<< HEAD
+									<input type="hidden" name="userName" value="${ u.userName }">
+=======
 									<input type="hidden" name="name" value="${ u.name }">
+>>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
 									<input type="submit" value="削除" class="button danger"
 											onclick="return confirm('本当にこのユーザーを削除しますか？');">
 								</form>

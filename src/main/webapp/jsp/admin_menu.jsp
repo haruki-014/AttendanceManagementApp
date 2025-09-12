@@ -10,8 +10,13 @@
 	</head>
 	<body>
 		<div class="container">
+<<<<<<< HEAD
+			<h1>管理者メニュー</h1>
+			<p>ようこそ、${ user.userName } さん（管理者）</p>
+=======
 			<h1>管理者メニュー画面</h1>
 			<p>ようこそ、${ user.name } さん（管理者）</p>
+>>>>>>> branch 'feature/connectDB-attendance' of ssh://git@github.com/haruki-014/AttendanceManagementApp.git
 			
 			<div class="main-nav">
 				<a href="${pageContext.request.contextPath}/attendance?action=filter">勤怠履歴管理</a>

@@ -16,15 +16,14 @@ import com.example.attendance.util.DBConnection;
 public class UserDAO {
 
     // ====== 【変更前】メモリ内保持 -> util.DBConnectionへ ======
-    
-	/*
+    /*
     private static final Map<String, User> users = new HashMap<>();
     static {
         users.put("employee1", new User("employee1", hashPassword("password"), "employee", true));
         users.put("admin1", new User("admin1", hashPassword("adminpass"), "admin", true));
         users.put("employee2", new User("employee2", hashPassword("password"), "employee", true));
     }
-    *
+    */
 
     // ====== 【変更前】DriverManagerで接続 ======
     /*
@@ -54,8 +53,7 @@ public class UserDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new User(
-                    	rs.getInt("id"),
-                        rs.getString("name"),
+                        rs.getString("user_name"),
                         rs.getString("password"),
                         rs.getString("role"),
                         rs.getBoolean("is_enabled")
@@ -90,6 +88,7 @@ public class UserDAO {
         return null;
     }
 
+
     public boolean verifyPassword(String name, String password) {
         User user = findByName(name);
         return user != null && user.isEnabled() && user.getPassword().equals(hashPassword(password));
@@ -105,14 +104,13 @@ public class UserDAO {
     // 【変更後】DB取得
     public Collection<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT id, name, password, role, is_enabled FROM users";
+        String sql = "SELECT user_name, password, role, is_enabled FROM users";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 users.add(new User(
-                	rs.getInt("id"),
-                    rs.getString("name"),
+                    rs.getString("user_name"),
                     rs.getString("password"),
                     rs.getString("role"),
                     rs.getBoolean("is_enabled")
@@ -124,16 +122,8 @@ public class UserDAO {
         return users;
     }
 
-    // ====== addUser ======
-    // 【変更前】メモリ内追加
-    /*
     public void addUser(User user) {
-        users.put(user.getUserName(), user);
-    }
-    */
-    // 【変更後】DB追加
-    public void addUser(User user) {
-        String sql = "INSERT INTO users (name, password, role, is_enabled) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO users (user_name, password, role, is_enabled) VALUES (?, ?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, user.getName());
@@ -160,9 +150,8 @@ public class UserDAO {
             ps.setString(2, user.getRole());
             ps.setBoolean(3, user.isEnabled());
             ps.setInt(4, user.getId());
-            int rows = ps.executeUpdate();
-            System.out.println(">>> update rows = " + rows);
-        } catch (SQLException e) {
+            ps.executeUpdate();
+                    } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -173,11 +162,11 @@ public class UserDAO {
         users.remove(userName);
     }
     */
-    public void deleteUser(String name) {
-        String sql = "DELETE FROM users WHERE name = ?";
+    public void deleteUser(String userName) {
+        String sql = "DELETE FROM users WHERE user_name = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, name);
+            ps.setString(1, userName);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -193,12 +182,12 @@ public class UserDAO {
         }
     }
     */
-    public void resetPassword(String name, String newPassword) {
-        String sql = "UPDATE users SET password = ? WHERE name = ?";
+    public void resetPassword(String userName, String newPassword) {
+        String sql = "UPDATE users SET password = ? WHERE user_name = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, hashPassword(newPassword));
-            ps.setString(2, name);
+            ps.setString(2, userName);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -214,12 +203,12 @@ public class UserDAO {
         }
     }
     */
-    public void toggleUserEnabled(String name, boolean isEnabled) {
-        String sql = "UPDATE users SET is_enabled = ? WHERE name = ?";
+    public void toggleUserEnabled(String userName, boolean isEnabled) {
+        String sql = "UPDATE users SET is_enabled = ? WHERE user_name = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setBoolean(1, isEnabled);
-            ps.setString(2, name);
+            ps.setString(2, userName);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

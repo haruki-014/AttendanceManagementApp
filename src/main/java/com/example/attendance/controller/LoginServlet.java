@@ -27,10 +27,13 @@ public class LoginServlet extends HttpServlet {
     
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
 		String name = request.getParameter("name");
+
 		String password = request.getParameter("password");
+
 		User user = userDAO.findByName(name);
+
 		
 		/* ユーザーが登録されている、ユーザーの有効化が正、パスワードのハッシュ化がなされている、全てを満たす時
 			セッションに成功メッセージをセット

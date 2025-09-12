@@ -36,6 +36,7 @@ public class User {
 		this.isEnabled = isEnabled;
 	}
 	
+
 	/* ログイン時 */
 	public User(int id, String name, String password, String role, boolean isEnabled) {
 		this.id = id;
@@ -55,6 +56,7 @@ public class User {
 	
 	public String getName() {
 		return name;
+
 	}
 	
 	public String getPassword() {
@@ -68,7 +70,7 @@ public class User {
 	public boolean isEnabled() {
 		return isEnabled;
 	}
-
+	
 	public void setEnabled(boolean isEnabled) {
 		this.isEnabled = isEnabled;
 	}
