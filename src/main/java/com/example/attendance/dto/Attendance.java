@@ -6,12 +6,17 @@ public class Attendance {
 
 	private int id;
 	private String userId;
-	private LocalDateTime checkInTime;
-	private LocalDateTime checkOutTime;
+	private LocalDateTime check_in_time;
+	private LocalDateTime check_out_time;
 	
 	public String getUserId() {
 		return userId;
 	}
+	
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	
 	
 	public int getId() {
 		return id;
@@ -24,21 +29,21 @@ public class Attendance {
 	public Attendance(String userId) {
 		this.userId = userId;
 	}
-	
-	public LocalDateTime getCheckInTime() {
-		return checkInTime;
-	}
-	
-	public void setCheckInTime(LocalDateTime checkInTime) {
-		this.checkInTime = checkInTime;
-	}
-	
-	public LocalDateTime getCheckOutTime() {
-		return checkOutTime;
-	}
-	
-	public void setCheckOutTime(LocalDateTime checkOutTime) {
-		this.checkOutTime = checkOutTime;
+
+	public LocalDateTime getCheck_in_time() {
+		return check_in_time;
 	}
 
+	public void setCheck_in_time(LocalDateTime check_in_time) {
+		this.check_in_time = check_in_time;
+	}
+
+	public LocalDateTime getCheck_out_time() {
+		return check_out_time;
+	}
+
+	public void setCheck_out_time(LocalDateTime check_out_time) {
+		this.check_out_time = check_out_time;
+	}
+	
 }
