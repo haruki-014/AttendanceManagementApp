@@ -5,18 +5,17 @@ import java.time.LocalDateTime;
 public class Attendance {
 
 	private int id;
-	private String userId;
+	private Integer userId;
 	private LocalDateTime check_in_time;
 	private LocalDateTime check_out_time;
 	
-	public String getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
-	
-	public void setUserId(String userId) {
+
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
-	
 	
 	public int getId() {
 		return id;
@@ -26,7 +25,11 @@ public class Attendance {
 		this.id = id;
 	}
 	
-	public Attendance(String userId) {
+	public Attendance() {
+		
+	}
+
+	public Attendance(Integer userId) {
 		this.userId = userId;
 	}
 

@@ -19,15 +19,15 @@ public class AttendanceDAO {
 	
 	public void checkIn(String userId) {
 		Attendance attendance = new Attendance(userId);
-		attendance.setCheckInTime(LocalDateTime.now());
+		attendance.setCheck_in_time(LocalDateTime.now());
 		attendanceRecords.add(attendance);
 	}
 	
 	public void checkOut(String userId) {
 		attendanceRecords.stream()
-				.filter(att -> userId.equals(att.getUserId()) && att.getCheckOutTime() == null) 
+				.filter(att -> userId.equals(att.getUserId()) && att.getCheck_out_time() == null) 
 				.findFirst()
-				.ifPresent(att -> att.setCheckOutTime(LocalDateTime.now()));
+				.ifPresent(att -> att.setCheck_out_time(LocalDateTime.now()));
 	}
 	
 	public List<Attendance> findByUserId(String userId) {
@@ -45,11 +45,11 @@ public class AttendanceDAO {
 				.filter(att -> userId == null || userId.isEmpty() || att.getUserId().equals(userId))
 				.filter(att ->
 						startDate == null || (
-						att.getCheckInTime() != null && att.getCheckInTime().toLocalDate().isBefore(startDate))
+						att.getCheck_in_time() != null && att.getCheck_in_time().toLocalDate().isBefore(startDate))
 						)
 				.filter(att ->
 						endDate == null || (
-						att.getCheckOutTime() != null && att.getCheckOutTime().toLocalDate().isAfter(endDate))
+						att.getCheck_out_time() != null && att.getCheck_out_time().toLocalDate().isAfter(endDate))
 						)
 				.collect(Collectors.toList());
 	}
@@ -88,8 +88,8 @@ public class AttendanceDAO {
 	public void addManualAttendance(String userId, LocalDateTime checkIn, LocalDateTime checkOut) {
 		Attendance newRecord = new Attendance(userId);
 		
-		newRecord.setCheckInTime(checkIn);
-		newRecord.setCheckOutTime(checkOut);
+		newRecord.setCheck_in_time(checkIn);
+		newRecord.setCheck_out_time(checkOut);
 		
 		attendanceRecords.add(newRecord);
 	}
@@ -101,11 +101,11 @@ public class AttendanceDAO {
 			
 			if (
 				att.getUserId().equals(userId) &&
-				att.getCheckInTime().equals(oldCheckIn) &&
-				(att.getCheckOutTime() == null ? oldCheckOut == null : att.getCheckOutTime().equals(oldCheckOut))
+				att.getCheck_in_time().equals(oldCheckIn) &&
+				(att.getCheck_out_time() == null ? oldCheckOut == null : att.getCheck_out_time().equals(oldCheckOut))
 				) {
-				att.setCheckInTime(newCheckIn);
-				att.setCheckOutTime(newCheckOut);
+				att.setCheck_in_time(newCheckIn);
+				att.setCheck_out_time(newCheckOut);
 				return true;
 			}
 		}
@@ -115,8 +115,8 @@ public class AttendanceDAO {
 	public boolean deleteManualAttendance(String userId, LocalDateTime checkIn, LocalDateTime checkOut) {
 		return attendanceRecords.removeIf(att ->
 				att.getUserId().equals(userId) &&
-				att.getCheckInTime().equals(checkIn) &&
-				(att.getCheckOutTime() == null ? checkOut == null : att.getCheckOutTime().equals(checkOut))
+				att.getCheck_in_time().equals(checkIn) &&
+				(att.getCheck_out_time() == null ? checkOut == null : att.getCheck_out_time().equals(checkOut))
 				);
 
 	}

@@ -8,12 +8,12 @@ public class User {
 	private String role;
 	private boolean isEnabled;
 	
-	/* 初期作成時 */
-	public User(String name, String password, String role) {
-		this(name, password, role, true);
+	public User(Integer id, String name, String password, String role) {
+		this(id, name, password, role, true);
 	}
 	
-	public User(String name, String password, String role, boolean isEnabled) {
+	public User(Integer id, String name, String password, String role, boolean isEnabled) {
+		this.id = id;
 		this.name = name;
 		this.password = password;
 		this.role = role;
