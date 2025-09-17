@@ -12,6 +12,7 @@
 		<div class="container">
 			<h1>管理者メニュー</h1>
 			<p>ようこそ、${ user.name } さん（管理者）</p>
+			<p>社員番号: ${ user.id }</p>
 			
 			<div class="main-nav">
 				<a href="${pageContext.request.contextPath}/attendance?action=filter">勤怠履歴管理</a>
