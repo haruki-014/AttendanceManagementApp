@@ -19,13 +19,23 @@ public class UserServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        userDAO = new UserDAO(); // DB利用のDAO
+        userDAO = new UserDAO(); 
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+    	req.setCharacterEncoding("UTF-8");
+    	
         String action = req.getParameter("action");
+        HttpSession session = req.getSession(false);
+		User currentUser = (User) session.getAttribute("user"); 
+		
+		if (currentUser == null) {
+			resp.sendRedirect("/login");
+			return;
+		}
+		
         if (action == null) {
             action = "list";
         }
@@ -35,10 +45,18 @@ public class UserServlet extends HttpServlet {
                 listUsers(req, resp);
                 break;
             case "edit":
-                editUser(req, resp);
+            	if ("admin".equals(currentUser.getRole())) {
+            		editUser(req, resp);
+            	} else {
+            		resp.sendRedirect("/login");
+            	}
                 break;
             case "delete":
-                deleteUser(req, resp);
+            	if ("admin".equals(currentUser.getRole())) {
+            		deleteUser(req, resp);
+            	} else {
+            		resp.sendRedirect("/login");
+            	}
                 break;
             default:
                 listUsers(req, resp);
@@ -49,9 +67,17 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+    	req.setCharacterEncoding("UTF-8");
+    	
         String action = req.getParameter("action");
         HttpSession session = req.getSession(false);
-		User currentUser = (User) session.getAttribute("user"); 
+		User currentUser = (User) session.getAttribute("user");
+
+		if (currentUser == null || !"admin".equals(currentUser.getRole())) {
+			resp.sendRedirect("/login");
+			return;
+		}
+		
 		
         if (action == null) {
             action = "add";
@@ -74,14 +100,13 @@ public class UserServlet extends HttpServlet {
                 break;
         }
         
-        resp.sendRedirect("users?action=list");
     }
 
     private void listUsers(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Collection<User> users = userDAO.getAllUsers();
         req.setAttribute("users", users);
-        req.getRequestDispatcher("/WEB-INF/views/userList.jsp").forward(req, resp);
+        req.getRequestDispatcher("/user_management.jsp").forward(req, resp);
     }
 
     private void editUser(HttpServletRequest req, HttpServletResponse resp)
@@ -89,7 +114,7 @@ public class UserServlet extends HttpServlet {
         Integer id = Integer.parseInt(req.getParameter("id"));
         User user = userDAO.findById(id);
         req.setAttribute("user", user);
-        req.getRequestDispatcher("/WEB-INF/views/userForm.jsp").forward(req, resp);
+        req.getRequestDispatcher("/user_management.jsp").forward(req, resp);
     }
 
     private void addUser(HttpServletRequest req, HttpServletResponse resp)
@@ -139,6 +164,8 @@ public class UserServlet extends HttpServlet {
     	Integer id = Integer.parseInt(req.getParameter("id"));
 		boolean isEnabled = Boolean.parseBoolean(req.getParameter("isEnabled"));
 		userDAO.toggleUserEnabled(id, isEnabled);
+		
+		resp.sendRedirect("users?action=list");
     }
 	
 }

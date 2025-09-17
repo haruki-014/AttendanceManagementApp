@@ -14,8 +14,8 @@
 			<h1>勤怠管理システム</h1>
 			<form action="login" method="post">
 				<p>
-					<label for="userName">ユーザーID: </label>
-					<input type="text" id="userName" name="userName" required>
+					<label for="userId">ユーザーID: </label>
+					<input type="text" id="userId" name="userId" required>
 				</p>
 				<p>
 					<label for="password">パスワード: </label>
