@@ -6,7 +6,7 @@ public class User {
 	private String name;
 	private String password;
 	private String role;
-	private boolean isEnabled;
+	private Boolean isEnabled;
 	
 	public User(String name, String password, String role) {
 		this(null, name, password, role, true);
@@ -36,8 +36,12 @@ public class User {
 		return role;
 	}
 	
-	public boolean isEnabled() {
+	public Boolean isEnabled() {
 		return isEnabled;
+	}
+	
+	public boolean getEnabled() {
+	    return isEnabled;
 	}
 	
 	public void setId(Integer id) {
@@ -56,7 +60,7 @@ public class User {
 		this.role = role;
 	}
 	
-	public void setEnabled(boolean isEnabled) {
+	public void setEnabled(Boolean isEnabled) {
 		this.isEnabled = isEnabled;
 	}
 	

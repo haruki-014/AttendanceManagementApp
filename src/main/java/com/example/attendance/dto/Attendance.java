@@ -6,24 +6,9 @@ public class Attendance {
 
 	private int id;
 	private Integer userId;
-	private LocalDateTime check_in_time;
-	private LocalDateTime check_out_time;
+	private LocalDateTime checkInTime;
+	private LocalDateTime checkOutTime;
 	
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
-	
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
 	
 	public Attendance() {
 		
@@ -33,20 +18,39 @@ public class Attendance {
 		this.userId = userId;
 	}
 
-	public LocalDateTime getCheck_in_time() {
-		return check_in_time;
+	public int getId() {
+		return id;
 	}
 
-	public void setCheck_in_time(LocalDateTime check_in_time) {
-		this.check_in_time = check_in_time;
+	public void setId(int id) {
+		this.id = id;
 	}
 
-	public LocalDateTime getCheck_out_time() {
-		return check_out_time;
+	public Integer getUserId() {
+		return userId;
 	}
 
-	public void setCheck_out_time(LocalDateTime check_out_time) {
-		this.check_out_time = check_out_time;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
+
+	public LocalDateTime getCheckInTime() {
+		return checkInTime;
+	}
+
+	public void setCheckInTime(LocalDateTime checkInTime) {
+		this.checkInTime = checkInTime;
+	}
+
+	public LocalDateTime getCheckOutTime() {
+		return checkOutTime;
+	}
+
+	public void setCheckOutTime(LocalDateTime checkOutTime) {
+		this.checkOutTime = checkOutTime;
+	}
+	
+	
+
 	
 }

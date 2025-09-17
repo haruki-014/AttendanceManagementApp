@@ -70,10 +70,10 @@ public class LoginServlet extends HttpServlet {
                         .collect(Collectors.groupingBy(
                                 com.example.attendance.dto.Attendance::getUserId,
                                 Collectors.summingLong(att -> {
-                                    if (att.getCheck_in_time() != null && att.getCheck_out_time() != null) {
+                                    if (att.getCheckInTime() != null && att.getCheckOutTime() != null) {
                                         return java.time.temporal.ChronoUnit.HOURS.between(
-                                                att.getCheck_in_time(),
-                                                att.getCheck_out_time()
+                                                att.getCheckInTime(),
+                                                att.getCheckOutTime()
                                         );
                                     }
                                     return 0L;

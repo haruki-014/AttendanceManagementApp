@@ -38,7 +38,7 @@
 				<input type="hidden" name="action" value="${ userToEdit != null ? 'update' : 'add' }">
 				
 				<c:if test="${ userToEdit != null }">
-					<input type="hidden" name="name" value="${ userToEdit.name }">
+					<input type="hidden" name="id" value="${ userToEdit.id }">
 				</c:if>
 				
 				<label for="userName">ユーザーID:</label>
@@ -60,13 +60,14 @@
 				</select>
 				
 				<p>
-					<lable for="isENabled">アカウント有効:</lable>
+					<label for="isEnabled">アカウント有効:</label>
 					<input type="checkbox" id="isEnabled" name="isEnabled" value="true"
-						<c:if test="${ userToEdit == null || userToEdit.isEnabled }">checked</c:if>
+						<c:if test="${ userToEdit == null }">checked</c:if>
+    					<c:if test="${ userToEdit != null and userToEdit.enabled }">checked</c:if>
 					>
 				</p>
 				<div class="button-group">
-					<input type="submit" value="${ userToEdit ? '更新' : '追加' }">
+					<input type="submit" value="${ userToEdit != null ? '更新' : '追加' }">
 				</div>
 			</form>
 			
@@ -130,7 +131,7 @@
 								</form>
 							</td>
 							<td class="table-actions">
-								<a href="users?action=test&name=${ u.name }" class="button">編集</a>
+								<a href="users?action=edit&id=${ u.id }" class="button">編集</a>
 								<form action="users" method="post" style="display:inline;">
 									<input type="hidden" name="action" value="delete">
 									<input type="hidden" name="id" value="${ u.id }">

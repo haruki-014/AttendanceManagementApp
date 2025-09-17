@@ -78,8 +78,8 @@ public class AttendanceServlet extends HttpServlet {
 					.collect(Collectors.groupingBy(
 							Attendance::getUserId,
 							Collectors.summingLong(att -> {
-										if (att.getCheck_in_time() != null && att.getCheck_out_time() != null) {
-											return java.time.temporal.ChronoUnit.HOURS.between(att.getCheck_in_time(), att.getCheck_out_time());
+										if (att.getCheckInTime() != null && att.getCheckOutTime() != null) {
+											return java.time.temporal.ChronoUnit.HOURS.between(att.getCheckInTime(), att.getCheckOutTime());
 										}
 										return 0L;
 									}
@@ -133,6 +133,10 @@ public class AttendanceServlet extends HttpServlet {
 			Integer userId = Integer.parseInt(request.getParameter("userId"));
 			String checkInStr = request.getParameter("checkInTime");
 			String checkOutStr = request.getParameter("checkOutTime");
+			
+			System.out.println(userId);
+			System.out.println(checkInStr);
+			System.out.println(checkOutStr);
 			
 			try {
 				LocalDateTime checkIn = LocalDateTime.parse(checkInStr);
@@ -233,8 +237,8 @@ public class AttendanceServlet extends HttpServlet {
 			writer.append(String.format(
 					"%s, %s, %s\n",
 					record.getUserId(),
-					record.getCheck_in_time() != null ? record.getCheck_in_time().format(formatter) : "",
-					record.getCheck_out_time() != null ? record.getCheck_out_time().format(formatter) : ""
+					record.getCheckInTime() != null ? record.getCheckInTime().format(formatter) : "",
+					record.getCheckOutTime() != null ? record.getCheckOutTime().format(formatter) : ""
 					)
 			);
 		}
