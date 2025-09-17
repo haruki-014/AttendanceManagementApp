@@ -116,7 +116,8 @@ public class UserServlet extends HttpServlet {
         Integer id = Integer.parseInt(req.getParameter("id"));
         User user = userDAO.findById(id);
         req.setAttribute("user", user);
-        req.getRequestDispatcher("/user_management.jsp").forward(req, resp);
+        RequestDispatcher rd = req.getRequestDispatcher("/jsp/user_management.jsp");
+        rd.forward(req, resp);
     }
 
     private void addUser(HttpServletRequest req, HttpServletResponse resp)
