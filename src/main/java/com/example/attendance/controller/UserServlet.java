@@ -3,6 +3,7 @@ package com.example.attendance.controller;
 import java.io.IOException;
 import java.util.Collection;
 
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -106,7 +107,8 @@ public class UserServlet extends HttpServlet {
             throws ServletException, IOException {
         Collection<User> users = userDAO.getAllUsers();
         req.setAttribute("users", users);
-        req.getRequestDispatcher("/user_management.jsp").forward(req, resp);
+        RequestDispatcher rd = req.getRequestDispatcher("/jsp/user_management.jsp");
+        rd.forward(req, resp);
     }
 
     private void editUser(HttpServletRequest req, HttpServletResponse resp)
