@@ -12,7 +12,7 @@
 	<body>
 		<div class="container">
 			<h1>ユーザー管理</h1>
-			<p>ようこそ、${ user.userName }さん</p>
+			<p>ようこそ、${ user.name }さん</p>
 			
 			<div class="main-nav">
 				<a href="${pageContext.request.contextPath}/attendance?action=filter">勤怠履歴管理</a>

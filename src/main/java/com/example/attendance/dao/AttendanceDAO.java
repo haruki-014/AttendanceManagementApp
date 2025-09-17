@@ -28,7 +28,7 @@ public class AttendanceDAO {
 		attendanceRecords.add(attendance);
 	}
 	
-	public void checkOut(String userId) {
+	public void checkOut(Integer userId) {
 		attendanceRecords.stream()
 				.filter(att -> userId.equals(att.getUserId()) && att.getCheck_out_time() == null) 
 				.findFirst()
@@ -87,16 +87,15 @@ public class AttendanceDAO {
 	
 	public Map<YearMonth, Long> getMonthlyWorkingHours(String userId) {
 		return attendanceRecords.stream()
-//				.filter(att -> userId == null || userId.isEmpty() || att.getUserId().equals(userId))
 //				.filter(att -> att.getCheckInTime() != null)
 				.filter(att -> userId == null || userId.isEmpty() || att.getUserId().equals(userId))
-	            .filter(att -> att.getCheckInTime() != null && att.getCheckOutTime() != null)
+	            .filter(att -> att.getCheck_in_time() != null && att.getCheck_out_time() != null)
 				.collect(Collectors.groupingBy(
-						att -> YearMonth.from(att.getCheckInTime()),
+						att -> YearMonth.from(att.getCheck_in_time()),
 						Collectors.summingLong(att ->
 										ChronoUnit.HOURS.between(
-										att.getCheckInTime(),
-										att.getCheckOutTime()
+										att.getCheck_in_time(),
+										att.getCheck_out_time()
 									)
 								)
 						)
@@ -106,9 +105,9 @@ public class AttendanceDAO {
 	public Map<YearMonth, Long> getMonthlyCheckInCounts(String userId){
 		return attendanceRecords.stream()
 				.filter(att -> userId == null || userId.isEmpty() || att.getUserId().equals(userId))
-				.filter(att -> att.getCheckInTime() != null)
+				.filter(att -> att.getCheck_in_time() != null)
 				.collect(Collectors.groupingBy(att ->
-						YearMonth.from(att.getCheckInTime()),
+						YearMonth.from(att.getCheck_in_time()),
 						Collectors.counting()
 						)
 				);
@@ -116,7 +115,7 @@ public class AttendanceDAO {
 	
 	
 	
-	public void addManualAttendance(String userId, LocalDateTime checkIn, LocalDateTime checkOut) {
+	public void addManualAttendance(Integer userId, LocalDateTime checkIn, LocalDateTime checkOut) {
 		Attendance newRecord = new Attendance(userId);
 		
 		newRecord.setCheck_in_time(checkIn);

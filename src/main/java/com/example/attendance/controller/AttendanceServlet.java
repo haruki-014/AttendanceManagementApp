@@ -73,13 +73,13 @@ public class AttendanceServlet extends HttpServlet {
 			List<Attendance> filteredRecords = attendanceDAO.findFilteredRecords(filterUserId, startDate, endDate);
 			request.setAttribute("allAttendanceRecords", filteredRecords);
 			
-			Map<String, Long> totalHoursByUser = 
+			Map<Integer, Long> totalHoursByUser = 
 					filteredRecords.stream()
 					.collect(Collectors.groupingBy(
 							Attendance::getUserId,
 							Collectors.summingLong(att -> {
-										if (att.getCheckInTime() != null && att.getCheckOutTime() != null) {
-											return java.time.temporal.ChronoUnit.HOURS.between(att.getCheckInTime(), att.getCheckOutTime());
+										if (att.getCheck_in_time() != null && att.getCheck_out_time() != null) {
+											return java.time.temporal.ChronoUnit.HOURS.between(att.getCheck_in_time(), att.getCheck_out_time());
 										}
 										return 0L;
 									}
@@ -103,7 +103,7 @@ public class AttendanceServlet extends HttpServlet {
 		} else {
 			request.setAttribute(
 					"attendanceRecords",
-					attendanceDAO.findByUserId(user.getUserName())
+					attendanceDAO.findByUserId(user.getId())
 					);
 			RequestDispatcher rd = request.getRequestDispatcher("/jsp/employee_menu.jsp");
 			rd.forward(request, response);
@@ -124,13 +124,13 @@ public class AttendanceServlet extends HttpServlet {
 		String action = request.getParameter("action");
 		
 		if ("checkIn".equals(action)) {
-			attendanceDAO.checkIn(user.getUserName());
+			attendanceDAO.checkIn(user.getId());
 			session.setAttribute("successMessage", "出勤を確認しました");
 		} else if ("checkOut".equals(action)) {
-			attendanceDAO.checkOut(user.getUserName());
+			attendanceDAO.checkOut(user.getId());
 			session.setAttribute("successMessage", "退勤を確認しました");
 		} else if ("add_manual".equals(action) && "admin".equals(user.getRole())) {
-			String userId = request.getParameter("userId");
+			Integer userId = Integer.parseInt(request.getParameter("userId"));
 			String checkInStr = request.getParameter("checkInTime");
 			String checkOutStr = request.getParameter("checkOutTime");
 			
@@ -233,8 +233,8 @@ public class AttendanceServlet extends HttpServlet {
 			writer.append(String.format(
 					"%s, %s, %s\n",
 					record.getUserId(),
-					record.getCheckInTime() != null ? record.getCheckInTime().format(formatter) : "",
-					record.getCheckOutTime() != null ? record.getCheckOutTime().format(formatter) : ""
+					record.getCheck_in_time() != null ? record.getCheck_in_time().format(formatter) : "",
+					record.getCheck_out_time() != null ? record.getCheck_out_time().format(formatter) : ""
 					)
 			);
 		}

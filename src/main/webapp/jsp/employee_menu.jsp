@@ -11,7 +11,7 @@
 	<body>
 		<div class="container">
 			<h1>従業員メニュー</h1>
-			<p>ようこそ、${ user.userName }さん</p>
+			<p>ようこそ、${ user.name }さん</p>
 			
 			<c:if test="${ not empty sessionScope.successMessage }">
 				<p class="success-message"><c:out value="${ sessionScope.successMessage }" /></p>
