@@ -92,16 +92,16 @@
 				<tbody>
 					<c:forEach var="u" items="${ users }">
 						<tr>
-							<td>${ u.userName }</td>
+							<td>${ u.name }</td>
 							<td>${ u.role }</td>
 							<td>
 								<form action="${pageContext.request.contextPath}/users" method="post" class="existing-users">
 									<input type="hidden" name="action" value="toggle_enabled">
-									<input type="hidden" name="userName" value="${ u.userName }">
-									<input  type="hidden" name="isEnabled" value="${ u.enabled }">
+									<input type="hidden" name="id" value="${ u.id }">
+									<input type="hidden" name="isEnabled" value="${ u.enabled }">
 									<input type="submit" 
 										value="<c:choose>
-													<c:when test="${ u.enabled }">無効化</c:when>
+													<c:when test='${ u.enabled }'>無効化</c:when>
 													<c:otherwise>有効化</c:otherwise>
 												</c:choose>"
 										class="button 
@@ -111,17 +111,17 @@
 												</c:choose>"
 										onclick="return confirm('本当にこのユーザーを
 													<c:choose>
-														<c:when test="${ u.enabled }">無効</c:when>
+														<c:when test='${ u.enabled }'>無効</c:when>
 														<c:otherwise>有効</c:otherwise>
 													</c:choose>
 													にしますか？');">
 								</form>
 							</td>
 							<td class="table-actions">
-								<a href="users?action=test&userName=${ u.userName }" class="button">編集</a>
+								<a href="users?action=test&name=${ u.name }" class="button">編集</a>
 								<form action="users" method="post" style="display:inline;">
 									<input type="hidden" name="action" value="delete">
-									<input type="hidden" name="userName" value="${ u.userName }">
+									<input type="hidden" name="userName" value="${ u.name }">
 									<input type="submit" value="削除" class="button danger"
 											onclick="return confirm('本当にこのユーザーを削除しますか？');">
 								</form>
@@ -133,6 +133,7 @@
 					</c:if>
 				</tbody>
 			</table>
+			
 		</div>
 	</body>
 </html>

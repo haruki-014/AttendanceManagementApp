@@ -82,7 +82,8 @@ public class UserDAO {
     // 【変更後】DB取得
     public Collection<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT name, password, role, is_enabled FROM users";
+        String sql = "SELECT id, name, password, role, is_enabled FROM users";
+
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -190,7 +191,7 @@ public class UserDAO {
         }
     }
     */
-    public void toggleUserEnabled(Integer id, boolean isEnabled) {
+    public void toggleUserEnabled(Integer id, Boolean isEnabled) {
         String sql = "UPDATE users SET is_enabled = ? WHERE id = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

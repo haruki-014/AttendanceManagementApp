@@ -6,7 +6,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>管理者メニュー</title>
-		<link rel="stylesheet" href="${ pageContext.request.contextPath }/style.css">
+		<link rel="stylesheet" href="${ pageContext.request.contextPath }/style/style.css">
 	</head>
 	<body>
 		<div class="container">

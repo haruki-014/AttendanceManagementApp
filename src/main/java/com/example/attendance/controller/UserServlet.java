@@ -71,6 +71,8 @@ public class UserServlet extends HttpServlet {
     	req.setCharacterEncoding("UTF-8");
     	
         String action = req.getParameter("action");
+        
+        System.out.println(action);
         HttpSession session = req.getSession(false);
 		User currentUser = (User) session.getAttribute("user");
 
@@ -166,7 +168,7 @@ public class UserServlet extends HttpServlet {
     private void toggleEnabled(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     	Integer id = Integer.parseInt(req.getParameter("id"));
 		boolean isEnabled = Boolean.parseBoolean(req.getParameter("isEnabled"));
-		userDAO.toggleUserEnabled(id, isEnabled);
+		userDAO.toggleUserEnabled(id, !isEnabled);
 		
 		resp.sendRedirect("users?action=list");
     }
