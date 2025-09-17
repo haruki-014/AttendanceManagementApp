@@ -81,26 +81,27 @@ public class UserServlet extends HttpServlet {
 			return;
 		}
 		
-		
         if (action == null) {
             action = "add";
         }
 
-        switch (action) {
-            case "add":
-                addUser(req, resp);
-                break;
-            case "update":
-                updateUser(req, resp);
-                break;
-            case "resetPassword":
-                resetPassword(req, resp);
-                break;
-            case "toggle_enabled":
-            	toggleEnabled(req, resp);
-            default:
-                listUsers(req, resp);
-                break;
+        if ("delete".equals(action)) {
+            deleteUser(req, resp);
+            
+        } else if ("add".equals(action)) {
+            addUser(req, resp);
+            
+        } else if ("update".equals(action)) {
+            updateUser(req, resp);
+            
+        } else if ("toggle_enabled".equals(action)) {
+            toggleEnabled(req, resp);
+            
+        } else if ("reset_password".equals(action)) {
+            resetPassword(req, resp);
+            
+        } else {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
         }
         
     }
@@ -157,8 +158,15 @@ public class UserServlet extends HttpServlet {
 
     private void resetPassword(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
-        Integer id = Integer.parseInt(req.getParameter("id"));
+    	String idStr = req.getParameter("id");
         String newPassword = req.getParameter("newPassword");
+
+        if (idStr == null || idStr.isEmpty() || newPassword == null || newPassword.isEmpty()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ユーザーID または パスワード がありません");
+            return;
+        }
+        
+        Integer id = Integer.parseInt(idStr);
 
         userDAO.resetPassword(id, newPassword);
 

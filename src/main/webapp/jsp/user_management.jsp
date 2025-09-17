@@ -12,7 +12,7 @@
 	<body>
 		<div class="container">
 			<h1>ユーザー管理</h1>
-			<p>ようこそ、${ user.name }さん</p>
+			<p>ようこそ、${ user.name }さん（${ user.role }）</p>
 			
 			<div class="main-nav">
 				<a href="${pageContext.request.contextPath}/attendance?action=filter">勤怠履歴管理</a>
@@ -27,15 +27,22 @@
 			
 			<h2>ユーザー追加・編集</h2>
 			<form action="${pageContext.request.contextPath}/users" method="post" class="user-form">
+				<c:set var="submitLabel">
+					<c:choose>
+						<c:when test='${ userToEdit != null }'>更新</c:when>
+						<c:otherwise>追加</c:otherwise>
+					</c:choose>
+				</c:set>
+				
 				<input type="hidden" name="action" value="${ userToEdit != null ? 'update' : 'add' }">
 				
 				<c:if test="${ userToEdit != null }">
-					<input type="hidden" name="userName" value="${ userToEdit.userName }">
+					<input type="hidden" name="name" value="${ userToEdit.name }">
 				</c:if>
 				
 				<label for="userName">ユーザーID:</label>
-				<input type="text" id="userName" name="userName"
-					value="<c:out value='${ userToEdit.userName }'/>"
+				<input type="text" id="name" name="name"
+					value="<c:out value='${ userToEdit.name }'/>"
 					<c:if test="${ userToEdit != null }">readonly</c:if>
 					required>
 				
@@ -58,10 +65,7 @@
 					>
 				</p>
 				<div class="button-group">
-					<input type="submit" 
-						value="<c:choose>
-						<c:when test='${ userToEdit != null }'>更新</c:when>
-						<c:otherwise>追加</c:otherwise></c:choose>">
+					<input type="submit" value="${ userToEdit ? '更新' : '追加' }">
 				</div>
 			</form>
 			
@@ -69,10 +73,10 @@
 			<c:if test="${ userToEdit != null }">
 				<form action="${pageContext.request.contextPath}/users" method="post" style="displsy:inline;">
 					<input type="hidden" name="action" value="reset_password">
-					<input type="hidden" name="userName" value="${ userToEdit.userName }">
+					<input type="hidden" name="id" value="${ userToEdit.id }">
 					<input type="hidden" name="newPassword" value="password">
 					<input type="submit" value="パスワードをリセット" class="button secondary"
-						onclick="return confirm('本当にパスワードをリセットしますか？(デフォルトパスワード: passwprd)');">
+						onclick="return confirm('本当にパスワードをリセットしますか？(デフォルトパスワード: password)');">
 				</form>
 			</c:if>
 			
@@ -91,6 +95,25 @@
 				</thead>
 				<tbody>
 					<c:forEach var="u" items="${ users }">
+						<c:set var="buttonLabel">
+							<c:choose>
+								<c:when test="${u.enabled}">無効化</c:when>
+								<c:otherwise>有効化</c:otherwise>
+							</c:choose>
+						</c:set>
+						<c:set var="buttonClass">
+							<c:choose>
+								<c:when test="${u.enabled}">danger</c:when>
+								<c:otherwise>secondary</c:otherwise>
+							</c:choose>
+						</c:set>
+						<c:set var="buttonOnClick">
+							<c:choose>
+								<c:when test='${ u.enabled }'>無効</c:when>
+								<c:otherwise>有効</c:otherwise>
+							</c:choose>
+						</c:set>
+						
 						<tr>
 							<td>${ u.name }</td>
 							<td>${ u.role }</td>
@@ -99,29 +122,17 @@
 									<input type="hidden" name="action" value="toggle_enabled">
 									<input type="hidden" name="id" value="${ u.id }">
 									<input type="hidden" name="isEnabled" value="${ u.enabled }">
-									<input type="submit" 
-										value="<c:choose>
-													<c:when test='${ u.enabled }'>無効化</c:when>
-													<c:otherwise>有効化</c:otherwise>
-												</c:choose>"
-										class="button 
-												<c:choose>
-													<c:when test='${ u.enabled }'>danger</c:when>
-													<c:otherwise>secondary</c:otherwise>
-												</c:choose>"
-										onclick="return confirm('本当にこのユーザーを
-													<c:choose>
-														<c:when test='${ u.enabled }'>無効</c:when>
-														<c:otherwise>有効</c:otherwise>
-													</c:choose>
-													にしますか？');">
+									<input type="submit"
+								       value="${ u.enabled ? '無効化' : '有効化' }"
+								       class="button ${ u.enabled ? 'danger' : 'secondary' }"
+								       onclick="return confirm('本当にこのユーザーを${ u.enabled ? '無効' : '有効' }にしますか？');">
 								</form>
 							</td>
 							<td class="table-actions">
 								<a href="users?action=test&name=${ u.name }" class="button">編集</a>
 								<form action="users" method="post" style="display:inline;">
 									<input type="hidden" name="action" value="delete">
-									<input type="hidden" name="userName" value="${ u.name }">
+									<input type="hidden" name="id" value="${ u.id }">
 									<input type="submit" value="削除" class="button danger"
 											onclick="return confirm('本当にこのユーザーを削除しますか？');">
 								</form>

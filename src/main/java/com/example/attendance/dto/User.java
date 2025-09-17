@@ -8,8 +8,8 @@ public class User {
 	private String role;
 	private boolean isEnabled;
 	
-	public User(Integer id, String name, String password, String role) {
-		this(id, name, password, role, true);
+	public User(String name, String password, String role) {
+		this(null, name, password, role, true);
 	}
 	
 	public User(Integer id, String name, String password, String role, boolean isEnabled) {
