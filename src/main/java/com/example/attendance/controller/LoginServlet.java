@@ -60,7 +60,7 @@ public class LoginServlet extends HttpServlet {
         if (user != null && user.isEnabled() && userDAO.verifyPassword(user.getId(), password)) {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
-            session.setAttribute("successMessage", "ログインしました");
+            request.setAttribute("successMessage", "ログインしました");
 
             // 管理者の場合
             if ("admin".equals(user.getRole())) {

@@ -51,9 +51,14 @@ public class AttendanceServlet extends HttpServlet {
 			exportCsv(request, response);
 			
 		} else if ("filter".equals(action) && "admin".equals(user.getRole())) {
-			Integer filterUserId = Integer.parseInt(request.getParameter("filterUserId"));
+			String filterUserIdStr = request.getParameter("filterUserId");
 			String startDateStr = request.getParameter("startDate");
 			String endDateStr = request.getParameter("endDate");
+			
+			Integer filterUserId = null;
+			if (filterUserIdStr != null && !filterUserIdStr.isEmpty()) {
+			    filterUserId = Integer.parseInt(filterUserIdStr);
+			}
 			
 			LocalDate startDate = null;
 			LocalDate endDate = null;
@@ -90,11 +95,11 @@ public class AttendanceServlet extends HttpServlet {
 			
 			request.setAttribute(
 					"monthlyWorkingHours",
-					attendanceDAO.getMonthlyWorkingHours(null)
+					attendanceDAO.getMonthlyWorkingHours(filterUserId != null ? filterUserId : null)
 					);
 			request.setAttribute(
 					"monthlyCheckInCounts",
-					attendanceDAO.getMonthlyCheckInCounts(null)
+					attendanceDAO.getMonthlyCheckInCounts(filterUserId != null ? filterUserId : null)
 					);
 			
 			RequestDispatcher rd = request.getRequestDispatcher("/jsp/admin_menu.jsp");
@@ -157,12 +162,18 @@ public class AttendanceServlet extends HttpServlet {
 				request.setAttribute("errorMessage", "日付の形式が不正です");
 			}
 		} else if ("update_manual".equals(action) && "admin".equals(user.getRole())) {
-			String userId = request.getParameter("userId");
+			String userIdStr = request.getParameter("userId");
 			LocalDateTime oldCheckIn = LocalDateTime.parse(request.getParameter("oldCheckInTime"));
 			LocalDateTime oldCheckOut =
 					request.getParameter("oldCheckOut") != null &&
 					!request.getParameter("oldCheckOut").isEmpty() ?
 							LocalDateTime.parse(request.getParameter("oldCheckOut")) : null;
+			
+			Integer userId = null;
+			if (userIdStr != null && !userIdStr.isEmpty()) {
+				userId = Integer.parseInt(userIdStr);
+			}
+			
 			LocalDateTime newCheckIn = LocalDateTime.parse(request.getParameter("newCheckInTime"));
 			LocalDateTime newCheckOut =
 					request.getParameter("newCheckOut") != null &&
@@ -178,12 +189,17 @@ public class AttendanceServlet extends HttpServlet {
 			}
 			
 		} else if ("delete_manual".equals(action) && "admin".equals(user.getRole())) {
-			String userId = request.getParameter("userId");
+			String userIdStr = request.getParameter("userId");
 			LocalDateTime checkIn = LocalDateTime.parse(request.getParameter("checkInTime"));
 			LocalDateTime checkOut =
 					request.getParameter("checkOutTime") != null &&
 					!request.getParameter("checkOutTime").isEmpty() ?
 							LocalDateTime.parse(request.getParameter("checkOutTime")) : null;
+			
+			Integer userId = null;
+			if (userIdStr != null && !userIdStr.isEmpty()) {
+				userId = Integer.parseInt(userIdStr);
+			}
 			
 			if (attendanceDAO.deleteManualAttendance(userId, checkIn, checkOut)) {
 				request.setAttribute("successMessage", "勤怠記録の削除に成功しました");

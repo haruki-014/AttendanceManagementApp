@@ -5,22 +5,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 import com.example.attendance.dto.Attendance;
 import com.example.attendance.util.DBConnection;
 
 public class AttendanceDAO {
 
-    private static final List<Attendance> attendanceRecords = new CopyOnWriteArrayList<>();
+//    private static final List<Attendance> attendanceRecords = new CopyOnWriteArrayList<>();
 
     public Boolean checkIn(Integer userId) {
     	if (hasActiveAttendance(userId)) {
@@ -192,56 +191,187 @@ public class AttendanceDAO {
         return records;
     }
 
-    public Map<YearMonth, Long> getMonthlyWorkingHours(String userId) {
-        return attendanceRecords.stream()
-                .filter(att -> userId == null || userId.isEmpty() || att.getUserId().equals(userId))
-                .filter(att -> att.getCheckInTime() != null && att.getCheckOutTime() != null)
-                .collect(Collectors.groupingBy(
-                        att -> YearMonth.from(att.getCheckInTime()),
-                        Collectors.summingLong(att ->
-                                ChronoUnit.HOURS.between(att.getCheckInTime(), att.getCheckOutTime())
-                        )
-                ));
-    }
+    public Map<YearMonth, Long> getMonthlyWorkingHours(Integer userId) {
+        Map<YearMonth, Long> result = new HashMap<>();
 
-    public Map<YearMonth, Long> getMonthlyCheckInCounts(String userId) {
-        return attendanceRecords.stream()
-                .filter(att -> userId == null || userId.isEmpty() || att.getUserId().equals(userId))
-                .filter(att -> att.getCheckInTime() != null)
-                .collect(Collectors.groupingBy(
-                        att -> YearMonth.from(att.getCheckInTime()),
-                        Collectors.counting()
-                ));
-    }
+        String sql = "SELECT DATE_TRUNC('month', check_in_time) AS month, " +
+                     "SUM(EXTRACT(EPOCH FROM (check_out_time - check_in_time)) / 3600) AS hours " +
+                     "FROM attendance " +
+                     "WHERE check_in_time IS NOT NULL " +
+                     "AND check_out_time IS NOT NULL " +
+                     (userId != null ? "AND user_id = ? " : "") +
+                     "GROUP BY DATE_TRUNC('month', check_in_time) " +
+                     "ORDER BY month";
 
-    public void addManualAttendance(Integer userId, LocalDateTime checkIn, LocalDateTime checkOut) {
-        Attendance newRecord = new Attendance(userId);
-        newRecord.setCheckInTime(checkIn);
-        newRecord.setCheckOutTime(checkOut);
-        attendanceRecords.add(newRecord);
-    }
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-    public boolean updateManualAttendance(String userId, LocalDateTime oldCheckIn, LocalDateTime oldCheckOut,
-                                          LocalDateTime newCheckIn, LocalDateTime newCheckOut) {
-        for (int i = 0; i < attendanceRecords.size(); i++) {
-            Attendance att = attendanceRecords.get(i);
-
-            if (att.getUserId().equals(userId) &&
-                    att.getCheckInTime().equals(oldCheckIn) &&
-                    (att.getCheckOutTime() == null ? oldCheckOut == null : att.getCheckOutTime().equals(oldCheckOut))) {
-                att.setCheckInTime(newCheckIn);
-                att.setCheckOutTime(newCheckOut);
-                return true;
+            if (userId != null) {
+                stmt.setInt(1, userId);
             }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Timestamp monthTs = rs.getTimestamp("month");
+                    YearMonth ym = YearMonth.from(monthTs.toLocalDateTime());
+                    long hours = rs.getLong("hours");
+                    result.put(ym, hours);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+    
+    public Map<YearMonth, Long> getMonthlyCheckInCounts(Integer userId) {
+        Map<YearMonth, Long> result = new HashMap<>();
+
+        String sql = "SELECT DATE_TRUNC('month', check_in_time) AS month, " +
+                     "       COUNT(DISTINCT DATE(check_in_time)) AS count " +
+                     "FROM attendance " +
+                     "WHERE check_in_time IS NOT NULL " +
+                     (userId != null ? "AND user_id = ? " : "") +
+                     "GROUP BY DATE_TRUNC('month', check_in_time) " +
+                     "ORDER BY month";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            if (userId != null) {
+                stmt.setInt(1, userId);
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Timestamp monthTs = rs.getTimestamp("month");
+                    YearMonth ym = YearMonth.from(monthTs.toLocalDateTime());
+                    long count = rs.getLong("count");
+                    result.put(ym, count);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+
+
+//    public Map<YearMonth, Long> getMonthlyCheckInCounts(Integer userId) {
+//        Map<YearMonth, Long> result = new HashMap<>();
+//
+//        String sql = "SELECT DATE_TRUNC('month', check_in_time) AS month, COUNT(*) AS count " +
+//                     "FROM attendance " +
+//                     "WHERE check_in_time IS NOT NULL " +
+//                     (userId != null ? "AND user_id = ? " : "") +
+//                     "GROUP BY DATE_TRUNC('month', check_in_time) " +
+//                     "ORDER BY month";
+//
+//        try (Connection conn = DBConnection.getConnection();
+//             PreparedStatement stmt = conn.prepareStatement(sql)) {
+//
+//            if (userId != null) {
+//                stmt.setInt(1, userId);
+//            }
+//
+//            try (ResultSet rs = stmt.executeQuery()) {
+//                while (rs.next()) {
+//                    Timestamp monthTs = rs.getTimestamp("month");
+//                    YearMonth ym = YearMonth.from(monthTs.toLocalDateTime());
+//                    long count = rs.getLong("count");
+//                    result.put(ym, count);
+//                }
+//            }
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return result;
+//    }
+
+
+ // 勤怠レコードを手動追加
+    public void addManualAttendance(Integer userId, LocalDateTime checkIn, LocalDateTime checkOut) {
+        String sql = "INSERT INTO attendance (user_id, check_in_time, check_out_time) VALUES (?, ?, ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            stmt.setTimestamp(2, Timestamp.valueOf(checkIn));
+            if (checkOut != null) {
+                stmt.setTimestamp(3, Timestamp.valueOf(checkOut));
+            } else {
+                stmt.setNull(3, Types.TIMESTAMP);
+            }
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 勤怠レコードを手動更新
+    public boolean updateManualAttendance(Integer userId, LocalDateTime oldCheckIn, LocalDateTime oldCheckOut,
+                                          LocalDateTime newCheckIn, LocalDateTime newCheckOut) {
+        String sql = "UPDATE attendance " +
+                     "SET check_in_time = ?, check_out_time = ? " +
+                     "WHERE user_id = ? AND check_in_time = ? " +
+                     (oldCheckOut == null ? "AND check_out_time IS NULL" : "AND check_out_time = ?");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            // 新しい値
+            stmt.setTimestamp(1, Timestamp.valueOf(newCheckIn));
+            if (newCheckOut != null) {
+                stmt.setTimestamp(2, Timestamp.valueOf(newCheckOut));
+            } else {
+                stmt.setNull(2, Types.TIMESTAMP);
+            }
+
+            // 検索条件
+            stmt.setInt(3, userId);
+            stmt.setTimestamp(4, Timestamp.valueOf(oldCheckIn));
+            if (oldCheckOut != null) {
+                stmt.setTimestamp(5, Timestamp.valueOf(oldCheckOut));
+            }
+
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return false;
     }
 
-    public boolean deleteManualAttendance(String userId, LocalDateTime checkIn, LocalDateTime checkOut) {
-        return attendanceRecords.removeIf(att ->
-                att.getUserId().equals(userId) &&
-                        att.getCheckInTime().equals(checkIn) &&
-                        (att.getCheckOutTime() == null ? checkOut == null : att.getCheckOutTime().equals(checkOut))
-        );
+    // 勤怠レコードを手動削除
+    public boolean deleteManualAttendance(Integer userId, LocalDateTime checkIn, LocalDateTime checkOut) {
+        String sql = "DELETE FROM attendance WHERE user_id = ? AND check_in_time = ? " +
+                     (checkOut == null ? "AND check_out_time IS NULL" : "AND check_out_time = ?");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            stmt.setTimestamp(2, Timestamp.valueOf(checkIn));
+            if (checkOut != null) {
+                stmt.setTimestamp(3, Timestamp.valueOf(checkOut));
+            }
+
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
+
 }
