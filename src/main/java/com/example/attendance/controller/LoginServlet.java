@@ -25,7 +25,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // ログイン画面を表示するだけ
+        
         RequestDispatcher rd = request.getRequestDispatcher("/login.jsp");
         rd.forward(request, response);
     }

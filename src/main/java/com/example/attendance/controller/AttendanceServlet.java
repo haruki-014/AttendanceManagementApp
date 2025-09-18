@@ -124,11 +124,23 @@ public class AttendanceServlet extends HttpServlet {
 		String action = request.getParameter("action");
 		
 		if ("checkIn".equals(action)) {
-			attendanceDAO.checkIn(user.getId());
-			session.setAttribute("successMessage", "出勤を確認しました");
+		    boolean success = attendanceDAO.checkIn(user.getId());
+		    if (!success) {
+		        session.setAttribute("failureMessage", "退勤していない出勤が残っています。退勤してから新しく出勤してください。");
+		    } else {
+		        session.setAttribute("successMessage", "出勤しました。");
+		    }
+		    
+			boolean hasActiveAttendance = attendanceDAO.hasActiveAttendance(user.getId());
+			session.setAttribute("hasActiveAttendance", hasActiveAttendance);
+			
 		} else if ("checkOut".equals(action)) {
-			attendanceDAO.checkOut(user.getId());
-			session.setAttribute("successMessage", "退勤を確認しました");
+		    attendanceDAO.checkOut(user.getId());
+		    session.setAttribute("successMessage", "退勤しました。");
+		    
+			boolean hasActiveAttendance = attendanceDAO.hasActiveAttendance(user.getId());
+			session.setAttribute("hasActiveAttendance", hasActiveAttendance);
+			
 		} else if ("add_manual".equals(action) && "admin".equals(user.getRole())) {
 			Integer userId = Integer.parseInt(request.getParameter("userId"));
 			String checkInStr = request.getParameter("checkInTime");

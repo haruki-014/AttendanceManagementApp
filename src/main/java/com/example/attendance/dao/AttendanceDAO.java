@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -21,18 +22,75 @@ public class AttendanceDAO {
 
     private static final List<Attendance> attendanceRecords = new CopyOnWriteArrayList<>();
 
-    public void checkIn(Integer userId) {
-        Attendance attendance = new Attendance(userId);
-        attendance.setCheckInTime(LocalDateTime.now());
-        attendanceRecords.add(attendance);
+    public Boolean checkIn(Integer userId) {
+    	if (hasActiveAttendance(userId)) {
+            return false; // 出勤中なので新規出勤は不可
+        }
+    	
+        String insertSql = "Insert INTO attendance (user_id, check_in_time) values (?, ?)";
+        
+        try (Connection conn = DBConnection.getConnection();
+        		PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+        	
+        	insertStmt.setInt(1, userId);
+        	insertStmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+        	insertStmt.executeUpdate();
+        	return true;
+            
+        } catch (SQLException e) {
+           e.printStackTrace();
+        }
+        return false;
+    }
+    
+    public boolean hasActiveAttendance(Integer userId) {
+        String sql = "SELECT COUNT(*) FROM attendance WHERE user_id = ? AND check_out_time IS NULL";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
+
     public void checkOut(Integer userId) {
-        attendanceRecords.stream()
-                .filter(att -> userId.equals(att.getUserId()) && att.getCheckOutTime() == null)
-                .findFirst()
-                .ifPresent(att -> att.setCheckOutTime(LocalDateTime.now()));
-    }
+    	String sql = "WITH latest AS (" +
+	    	        "    SELECT id FROM attendance " +
+	    	        "    WHERE user_id = ? AND check_out_time IS NULL " +
+	    	        "    ORDER BY check_in_time DESC " +
+	    	        "    LIMIT 1" +
+	    	        ") " +
+	    	        "UPDATE attendance " +
+	    	        "SET check_out_time = ? " +
+	    	        "WHERE id IN (SELECT id FROM latest)";
+//    			"UPDATE attendance " +
+//	            "SET check_out_time = ? " +
+//	            "WHERE id = (" +
+//	            "    SELECT id FROM attendance " +
+//	            "    WHERE user_id = ? AND check_out_time IS NULL " +
+//	            "    ORDER BY check_in_time DESC " +
+//	            "    LIMIT 1" +
+//	            ")";
+
+
+	   try (Connection conn = DBConnection.getConnection();
+	        PreparedStatement stmt = conn.prepareStatement(sql)) {
+	
+	       stmt.setInt(1, userId);
+	       stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+	
+	       stmt.executeUpdate();
+	   } catch (SQLException e) {
+	       e.printStackTrace();
+	   }
+   }
 
     public List<Attendance> findByUserId(Integer userId) {
         List<Attendance> records = new ArrayList<>();

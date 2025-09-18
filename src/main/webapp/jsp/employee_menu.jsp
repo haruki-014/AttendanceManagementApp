@@ -22,11 +22,11 @@
 			<div class="button-group">
 				<form action="attendance" method="post" style="display:inline;">
 					<input type="hidden" name="action" value="checkIn">
-					<input type="submit" value="出勤">
+					<input type="submit" value="出勤" <c:if test="${ sessionScope.hasActiveAttendance }">disabled</c:if> />
 				</form>
 				<form action="attendance" method="post" style="display:inline;">
 					<input type="hidden" name="action" value="checkOut">
-					<input type="submit" value="退勤">
+					<input type="submit" value="退勤" <c:if test="${ !sessionScope.hasActiveAttendance }">disabled</c:if> />
 				</form>
 			</div>
 			

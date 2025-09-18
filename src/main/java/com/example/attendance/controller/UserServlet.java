@@ -122,13 +122,11 @@ public class UserServlet extends HttpServlet {
         	System.out.println(idStr);
             Integer id = Integer.parseInt(idStr);
             User user = userDAO.findById(id);
-            System.out.println(user.getName());
             req.setAttribute("userToEdit", user);
         }
         
         Collection<User> users = userDAO.getAllUsers();
         req.setAttribute("users", users);
-        System.out.println(users);
         
         RequestDispatcher rd = req.getRequestDispatcher("/jsp/user_management.jsp");
         rd.forward(req, resp);
