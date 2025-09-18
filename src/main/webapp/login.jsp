@@ -16,6 +16,7 @@
 				<p>
 					<label for="userId">ユーザーID: </label>
 					<input type="text" id="userId" name="userId" required>
+					<script type="text/javascript">document.getElementById("userId").focus()</script>
 				</p>
 				<p>
 					<label for="password">パスワード: </label>

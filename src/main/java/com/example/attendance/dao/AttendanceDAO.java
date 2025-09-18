@@ -110,7 +110,6 @@ public class AttendanceDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("findByUserId->records: " +records);
         return records;
     }
 
