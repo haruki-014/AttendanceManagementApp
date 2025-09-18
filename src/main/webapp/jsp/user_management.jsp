@@ -21,8 +21,8 @@
 				<a href="${pageContext.request.contextPath}/logout">ログアウト</a>
 			</div>
 			
-			<c:if test="${ not empty sessionScope.successMessage }">
-				<p class="success-message"><c:out value="${ sessionScope.successMessage }" /></p>
+			<c:if test="${ not empty successMessage }">
+				<p class="success-message"><c:out value="${ successMessage }" /></p>
 				<c:remove var="successMessage" scope="session" />
 			</c:if>
 			

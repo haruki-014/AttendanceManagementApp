@@ -126,9 +126,9 @@ public class AttendanceServlet extends HttpServlet {
 		if ("checkIn".equals(action)) {
 		    boolean success = attendanceDAO.checkIn(user.getId());
 		    if (!success) {
-		        session.setAttribute("failureMessage", "退勤していない出勤が残っています。退勤してから新しく出勤してください。");
+		        request.setAttribute("failureMessage", "退勤していない出勤が残っています。退勤してから新しく出勤してください。");
 		    } else {
-		        session.setAttribute("successMessage", "出勤しました。");
+		        request.setAttribute("successMessage", "出勤しました。");
 		    }
 		    
 			boolean hasActiveAttendance = attendanceDAO.hasActiveAttendance(user.getId());
@@ -136,7 +136,7 @@ public class AttendanceServlet extends HttpServlet {
 			
 		} else if ("checkOut".equals(action)) {
 		    attendanceDAO.checkOut(user.getId());
-		    session.setAttribute("successMessage", "退勤しました。");
+		    request.setAttribute("successMessage", "退勤しました。");
 		    
 			boolean hasActiveAttendance = attendanceDAO.hasActiveAttendance(user.getId());
 			session.setAttribute("hasActiveAttendance", hasActiveAttendance);
@@ -146,19 +146,15 @@ public class AttendanceServlet extends HttpServlet {
 			String checkInStr = request.getParameter("checkInTime");
 			String checkOutStr = request.getParameter("checkOutTime");
 			
-			System.out.println(userId);
-			System.out.println(checkInStr);
-			System.out.println(checkOutStr);
-			
 			try {
 				LocalDateTime checkIn = LocalDateTime.parse(checkInStr);
 				LocalDateTime checkOut = 
 						checkOutStr != null && !checkOutStr.isEmpty() ?
 								LocalDateTime.parse(checkOutStr) : null;
 				attendanceDAO.addManualAttendance(userId, checkIn, checkOut);
-				session.setAttribute("successMessage", "手動で勤怠記録を追加しました");
+				request.setAttribute("successMessage", "手動で勤怠記録を追加しました");
 			} catch (DateTimeParseException e) {
-				session.setAttribute("errorMessage", "日付の形式が不正です");
+				request.setAttribute("errorMessage", "日付の形式が不正です");
 			}
 		} else if ("update_manual".equals(action) && "admin".equals(user.getRole())) {
 			String userId = request.getParameter("userId");
@@ -174,10 +170,10 @@ public class AttendanceServlet extends HttpServlet {
 							LocalDateTime.parse(request.getParameter("newCheckOut")) : null;
 			
 			if (attendanceDAO.updateManualAttendance(userId, oldCheckIn, oldCheckOut, newCheckIn, newCheckOut)) {
-				session.setAttribute("successMessage", "勤怠記録の手動更新に成功しました");
+				request.setAttribute("successMessage", "勤怠記録の手動更新に成功しました");
 				
 			} else {
-				session.setAttribute("errorMessage", "勤怠記録の手動更新に失敗しました");
+				request.setAttribute("errorMessage", "勤怠記録の手動更新に失敗しました");
 				
 			}
 			
@@ -190,9 +186,9 @@ public class AttendanceServlet extends HttpServlet {
 							LocalDateTime.parse(request.getParameter("checkOutTime")) : null;
 			
 			if (attendanceDAO.deleteManualAttendance(userId, checkIn, checkOut)) {
-				session.setAttribute("successMessage", "勤怠記録の削除に成功しました");
+				request.setAttribute("successMessage", "勤怠記録の削除に成功しました");
 			} else {
-				session.setAttribute("errorMessage", "勤怠記録の削除に失敗しました");
+				request.setAttribute("errorMessage", "勤怠記録の削除に失敗しました");
 			}
 			
 		} 

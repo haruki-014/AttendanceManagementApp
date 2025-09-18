@@ -14,9 +14,8 @@
 			<p>ようこそ、${ user.name }さん</p>
 			<p>社員番号: ${ user.id }</p>
 			
-			<c:if test="${ not empty sessionScope.successMessage }">
-				<p class="success-message"><c:out value="${ sessionScope.successMessage }" /></p>
-				<c:remove var="successMessage" scope="session" />
+			<c:if test="${ not empty successMessage }">
+				<p class="success-message"><c:out value="${ successMessage }" /></p>
 			</c:if>
 			
 			<div class="button-group">
