@@ -51,7 +51,7 @@ public class AttendanceServlet extends HttpServlet {
 			exportCsv(request, response);
 			
 		} else if ("filter".equals(action) && "admin".equals(user.getRole())) {
-			String filterUserId = request.getParameter("filterUserId");
+			Integer filterUserId = Integer.parseInt(request.getParameter("filterUserId"));
 			String startDateStr = request.getParameter("startDate");
 			String endDateStr = request.getParameter("endDate");
 			
@@ -225,7 +225,7 @@ public class AttendanceServlet extends HttpServlet {
 		PrintWriter writer = response.getWriter();
 		writer.append("User ID, Check-in Time, Check-out Time\n");
 		
-		String filterUserId = request.getParameter("filterUserId");
+		Integer filterUserId = Integer.parseInt(request.getParameter("filterUserId"));
 		String startDateStr = request.getParameter("startDate");
 		String endDateStr = request.getParameter("endDate");
 		LocalDate startDate = null;
