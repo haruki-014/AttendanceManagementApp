@@ -71,6 +71,23 @@ public class UserDAO {
         User user = findById(id);
         return user != null && user.isEnabled() && user.getPassword().equals(hashPassword(password));
     }
+    
+    public String findUserNameById(Integer userId) {
+        String sql = "SELECT name FROM users WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("name");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     // ====== getAllUsers ======
     // 【変更前】メモリ内取得
