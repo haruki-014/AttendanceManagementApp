@@ -31,24 +31,39 @@
 			
 			<h2>あなたの勤怠履歴</h2>
 			<table>
-				<thead>
-					<tr>
-						<th>出勤時刻</th>
-						<th>退勤時時刻</th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach var="att" items="${ attendanceRecords }">
-						<tr>
-							<th>${ att.checkInTime }</th>
-							<th>${ att.checkOutTime }</th>
-						</tr>
-					</c:forEach>
-					<c:if test="${ empty attendanceRecords }">
-						<tr><td colspan="2">勤怠記録がありません</td></tr>
-					</c:if>
-				</tbody>
+			    <thead>
+			        <tr>
+			            <th>出勤時刻</th>
+			            <th>退勤時刻</th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			        <c:forEach var="att" items="${ attendanceRecords }">
+			            <tr>
+			                <td>${ att.checkInTime }</td>
+			                <td>${ att.checkOutTime }</td>
+			            </tr>
+			        </c:forEach>
+			        <c:if test="${ empty attendanceRecords }">
+			            <tr><td colspan="2">勤怠記録がありません</td></tr>
+			        </c:if>
+			    </tbody>
 			</table>
+			
+			<!-- ページングリンク -->
+			<div class="pagination">
+			    <c:forEach begin="1" end="${ totalPages }" var="i">
+			        <c:choose>
+			            <c:when test="${ i == currentPage }">
+			                <span>[${ i }]</span>
+			            </c:when>
+			            <c:otherwise>
+			                <a href="${pageContext.request.contextPath}/employeeMenu?page=${ i }">[${ i }]</a>
+			            </c:otherwise>
+			        </c:choose>
+			    </c:forEach>
+			</div>
+			
 			
 			<div class="button-group">
 				<a href="logout" class="button secondary">ログアウト</a>

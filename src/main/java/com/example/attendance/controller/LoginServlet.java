@@ -84,13 +84,8 @@ public class LoginServlet extends HttpServlet {
                 rd.forward(request, response);
 
             // 従業員の場合
-            } else {
-                request.setAttribute(
-                        "attendanceRecords",
-                        attendanceDAO.findByUserId(user.getId())
-                );
-                RequestDispatcher rd = request.getRequestDispatcher("jsp/employee_menu.jsp");
-                rd.forward(request, response);
+            } else {                
+            	response.sendRedirect("employeeMenu");
             }
 
         } else {
