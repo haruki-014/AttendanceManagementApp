@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.example.attendance.dto.Position;
 import com.example.attendance.dto.User;
 import com.example.attendance.util.DBConnection;
 
@@ -46,18 +47,19 @@ public class UserDAO {
     */
     // 【変更後】DB検索
     public User findById(Integer id) {
-        String sql = "SELECT id, name, password, role, is_enabled FROM users WHERE id = ?";
+        String sql = "SELECT id, name, password, role, is_enabled, position FROM users WHERE id = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new User(
-                    	rs.getInt("id"),
+                        rs.getInt("id"),
                         rs.getString("name"),
                         rs.getString("password"),
                         rs.getString("role"),
-                        rs.getBoolean("is_enabled")
+                        rs.getBoolean("is_enabled"),
+                        Position.valueOf(rs.getString("position"))
                     );
                 }
             }
@@ -66,6 +68,7 @@ public class UserDAO {
         }
         return null;
     }
+
 
     public boolean verifyPassword(Integer id, String password) {
         User user = findById(id);
@@ -99,7 +102,7 @@ public class UserDAO {
     // 【変更後】DB取得
     public Collection<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT id, name, password, role, is_enabled FROM users";
+        String sql = "SELECT id, name, password, role, is_enabled, position FROM users";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -110,7 +113,8 @@ public class UserDAO {
 	                    rs.getString("name"),
 	                    rs.getString("password"),
 	                    rs.getString("role"),
-	                    rs.getBoolean("is_enabled")
+	                    rs.getBoolean("is_enabled"),
+	                    Position.valueOf(rs.getString("position"))
                 ));
             }
         } catch (SQLException e) {
@@ -128,13 +132,14 @@ public class UserDAO {
     */
     // 【変更後】DB追加
     public void addUser(User user) {
-        String sql = "INSERT INTO users (name, password, role, is_enabled) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO users (name, password, role, is_enabled, position) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, user.getName());
             ps.setString(2, hashPassword(user.getPassword()));
             ps.setString(3, user.getRole());
             ps.setBoolean(4, user.isEnabled());
+            ps.setString(5, user.getPosition().name());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -148,13 +153,15 @@ public class UserDAO {
     }
     */
     public void updateUser(User user) {
-        String sql = "UPDATE users SET password = ?, role = ?, is_enabled = ? WHERE id = ?";
+        String sql = "UPDATE users SET password = ?, role = ?, is_enabled = ?, position = ? WHERE id = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, hashPassword(user.getPassword()));
             ps.setString(2, user.getRole());
             ps.setBoolean(3, user.isEnabled());
-            ps.setInt(4, user.getId());
+            ps.setString(4, user.getPosition().name());
+            ps.setInt(5, user.getId());
+            
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
