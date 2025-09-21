@@ -7,19 +7,22 @@ public class User {
 	private String password;
 	private String role;
 	private Boolean isEnabled;
-	
-	public User(String name, String password, String role) {
-		this(null, name, password, role, true);
+	private Position position; // ← 追加（役職：OFFICER, COMPANY_EMPLOYEE, PART_TIME）
+
+	public User(String name, String password, String role, Position position) {
+		this(null, name, password, role, true, position);
 	}
 	
-	public User(Integer id, String name, String password, String role, boolean isEnabled) {
+	public User(Integer id, String name, String password, String role, boolean isEnabled, Position position) {
 		this.id = id;
 		this.name = name;
 		this.password = password;
 		this.role = role;
 		this.isEnabled = isEnabled;
+		this.position = position;
 	}
 	
+	// --- getter ---
 	public Integer getId() {
 		return id;
 	}
@@ -44,6 +47,11 @@ public class User {
 	    return isEnabled;
 	}
 	
+	public Position getPosition() {
+		return position;
+	}
+	
+	// --- setter ---
 	public void setId(Integer id) {
 		this.id = id;
 	}
@@ -63,5 +71,8 @@ public class User {
 	public void setEnabled(Boolean isEnabled) {
 		this.isEnabled = isEnabled;
 	}
-	
+
+	public void setPosition(Position position) {
+		this.position = position;
+	}
 }

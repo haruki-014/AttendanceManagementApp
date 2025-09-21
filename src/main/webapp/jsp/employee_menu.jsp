@@ -29,6 +29,10 @@
 				</form>
 			</div>
 			
+			<div>
+				<p>${ totalHoursByUser }</p>
+			</div>
+			
 			<h2>あなたの勤怠履歴</h2>
 			<table>
 			    <thead>
@@ -50,7 +54,6 @@
 			    </tbody>
 			</table>
 			
-			<!-- ページングリンク -->
 			<div class="pagination">
 			    <c:forEach begin="1" end="${ totalPages }" var="i">
 			        <c:choose>
