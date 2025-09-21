@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 
 <!DOCTYPE html>
 <html>
@@ -29,9 +31,22 @@
 				</form>
 			</div>
 			
-			<div>
-				<p>${ totalHoursByUser }</p>
-			</div>
+			<h2>労働時間の合計</h2>
+			<form action="${pageContext.request.contextPath}/employeeMenu" method="get">
+			    <label for="period">期間を選択:</label>
+			    <select name="period" id="period">
+			        <option value="today" <c:if test="${ selectedPeriod == 'today' }">selected</c:if>>今日</option>
+			        <option value="week" <c:if test="${ selectedPeriod == 'week' }">selected</c:if>>今週（日〜土）</option>
+			        <option value="month" <c:if test="${ selectedPeriod == 'month' }">selected</c:if>>今月</option>
+			    </select>
+			    <input type="submit" value="表示">
+			</form>
+
+			<c:if test="${ not empty totalHours }">
+			    <p>選択期間の合計労働時間: 
+			        <fmt:formatNumber value="${ totalHours }" type="number" maxFractionDigits="2" /> 時間
+			    </p>
+			</c:if>
 			
 			<h2>あなたの勤怠履歴</h2>
 			<table>

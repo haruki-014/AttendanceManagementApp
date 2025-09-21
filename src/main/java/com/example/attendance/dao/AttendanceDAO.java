@@ -292,6 +292,45 @@ public class AttendanceDAO {
 //
 //        return result;
 //    }
+    
+
+        public double getTotalHoursToday(int userId) {
+            String sql = "SELECT SUM(EXTRACT(EPOCH FROM (check_out_time - check_in_time))/3600) AS hours " +
+                         "FROM attendance " +
+                         "WHERE user_id = ? AND DATE(check_in_time) = CURRENT_DATE";
+            return getTotalHours(userId, sql);
+        }
+
+        public double getTotalHoursThisWeek(int userId) {
+            String sql = "SELECT SUM(EXTRACT(EPOCH FROM (check_out_time - check_in_time))/3600) AS hours " +
+                         "FROM attendance " +
+                         "WHERE user_id = ? AND DATE(check_in_time) >= date_trunc('week', CURRENT_DATE) " +
+                         "AND DATE(check_in_time) < date_trunc('week', CURRENT_DATE) + INTERVAL '7 day'";
+            return getTotalHours(userId, sql);
+        }
+
+        public double getTotalHoursThisMonth(int userId) {
+            String sql = "SELECT SUM(EXTRACT(EPOCH FROM (check_out_time - check_in_time))/3600) AS hours " +
+                         "FROM attendance " +
+                         "WHERE user_id = ? AND DATE_TRUNC('month', check_in_time) = DATE_TRUNC('month', CURRENT_DATE)";
+            return getTotalHours(userId, sql);
+        }
+
+        private double getTotalHours(int userId, String sql) {
+            try (Connection conn = DBConnection.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, userId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getDouble("hours");
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return 0.0;
+        }
+
 
 
  // 勤怠レコードを手動追加

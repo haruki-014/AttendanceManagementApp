@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import com.example.attendance.dao.UserDAO;
+import com.example.attendance.dto.Position;
 import com.example.attendance.dto.User;
 
 @WebServlet("/users")
@@ -138,8 +139,8 @@ public class UserServlet extends HttpServlet {
         String password = req.getParameter("password");
         String role = req.getParameter("role");
         boolean isEnabled = Boolean.parseBoolean(req.getParameter("isEnabled"));
-
-        User user = new User(null, name, password, role, isEnabled);
+        Position position = Position.valueOf(req.getParameter("position")); 
+        User user = new User(null, name, password, role, isEnabled, position);
         userDAO.addUser(user);
 
         resp.sendRedirect("users?action=list");
@@ -151,8 +152,9 @@ public class UserServlet extends HttpServlet {
         String password = req.getParameter("password");
         String role = req.getParameter("role");
         boolean isEnabled = Boolean.parseBoolean(req.getParameter("isEnabled"));
+        Position position = Position.valueOf(req.getParameter("position")); 
 
-        User user = new User(id, null, password, role, isEnabled);
+        User user = new User(id, null, password, role, isEnabled, position);
         userDAO.updateUser(user);
 
         resp.sendRedirect("users?action=list");

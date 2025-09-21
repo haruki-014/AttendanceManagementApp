@@ -27,10 +27,38 @@ public class EmployeeMenuServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
         User user = (User) session.getAttribute("user");
+		User currentUser = (User) session.getAttribute("user"); 
+
         if (user == null) {
             response.sendRedirect("login.jsp");
             return;
         }
+        
+        String period = request.getParameter("period");
+		System.out.println(period);
+	    request.setAttribute("selectedPeriod", period);
+		
+		if (period != null) {
+	        AttendanceDAO attendanceDAO = new AttendanceDAO();
+	        double totalHours = 0.0;
+
+	        switch (period) {
+	            case "today":
+	                totalHours = attendanceDAO.getTotalHoursToday(currentUser.getId());
+	                break;
+	            case "week":
+	                totalHours = attendanceDAO.getTotalHoursThisWeek(currentUser.getId());
+	                break;
+	            case "month":
+	                totalHours = attendanceDAO.getTotalHoursThisMonth(currentUser.getId());
+	                break;
+	            default:
+	                totalHours = 0.0;
+	                break;
+	        }
+
+	        request.setAttribute("totalHours", totalHours);
+	    }
 
         List<Attendance> allRecords = attendanceDAO.findByUserId(user.getId());
 
