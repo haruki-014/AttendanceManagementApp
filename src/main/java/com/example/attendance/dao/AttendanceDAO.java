@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.attendance.dto.Attendance;
+import com.example.attendance.dto.OverTimeReport;
+import com.example.attendance.dto.Position;
 import com.example.attendance.util.DBConnection;
 
 public class AttendanceDAO {
@@ -389,6 +391,35 @@ public class AttendanceDAO {
             e.printStackTrace();
         }
     }
+    
+    public List<OverTimeReport> getOverTimeReports() {
+        List<OverTimeReport> reports = new ArrayList<>();
+        String sql = "SELECT id, name, position FROM users WHERE position IN (?, ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);) {
+        	
+        	ps.setString(1, Position.COMPANY_EMPLOYEE.name());
+        	ps.setString(2, Position.PART_TIME.name());
+        	
+        	try (ResultSet rs = ps.executeQuery()) {
+	            while (rs.next()) {
+	                OverTimeReport report = new OverTimeReport();
+	                int userId = rs.getInt("id");
+	                report.setUserId(userId);
+	                report.setUserName(rs.getString("name"));
+	                report.setPosition(rs.getString("position"));
+	                report.setOvertimeHours(getMonthlyOvertimeHours(userId)); // 既存メソッド呼び出し
+	                reports.add(report);
+	            }
+        	}
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reports;
+    }
+
 
     // 勤怠レコードを手動更新
     public boolean updateManualAttendance(Integer userId, LocalDateTime oldCheckIn, LocalDateTime oldCheckOut,

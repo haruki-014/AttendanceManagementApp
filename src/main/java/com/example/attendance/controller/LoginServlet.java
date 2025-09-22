@@ -1,6 +1,7 @@
 package com.example.attendance.controller;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpSession;
 
 import com.example.attendance.dao.AttendanceDAO;
 import com.example.attendance.dao.UserDAO;
+import com.example.attendance.dto.OverTimeReport;
 import com.example.attendance.dto.User;
 
 @WebServlet("/login")
@@ -78,6 +80,13 @@ public class LoginServlet extends HttpServlet {
                                     }
                                     return 0L;
                                 })));
+                
+                System.out.println("==== 管理者ログイン処理に入りました ====");
+                List<OverTimeReport> reports = attendanceDAO.getOverTimeReports();
+                System.out.println("DAO呼び出し完了");
+                System.out.println("取得したレポート件数: " + (reports != null ? reports.size() : -1));
+
+                request.setAttribute("reports", reports);
 
                 request.setAttribute("totalHoursByUser", totalHoursByUser);
                 RequestDispatcher rd = request.getRequestDispatcher("jsp/admin_menu.jsp");

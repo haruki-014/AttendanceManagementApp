@@ -25,6 +25,28 @@
 				<c:remove var="successMessage" scope="session" />
 			</c:if>
 			
+			<h2>月間残業時間レポート</h2>
+
+			<table border="1">
+			    <tr>
+			        <th>ユーザー名</th>
+			        <th>区分</th>
+			        <th>残業時間</th>
+			        <th>警告</th>
+			    </tr>
+			    <c:forEach var="r" items="${ reports }">
+			        <tr>
+			            <td>${ r.userName }</td>
+			            <td>${ r.position }</td>
+			            <td>${ r.overtimeHours } 時間</td>
+			            <td>
+			                <c:if test="${ r.overtimeHours > 40 }">
+			                    ⚠️ 40時間超え
+			                </c:if>
+			            </td>
+			        </tr>
+			    </c:forEach>
+			</table>
 			
 			<h2>勤怠履歴</h2>
 			
