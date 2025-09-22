@@ -35,7 +35,6 @@ public class EmployeeMenuServlet extends HttpServlet {
         }
         
         String period = request.getParameter("period");
-		System.out.println(period);
 	    request.setAttribute("selectedPeriod", period);
 		
 		if (period != null) {
@@ -59,6 +58,14 @@ public class EmployeeMenuServlet extends HttpServlet {
 
 	        request.setAttribute("totalHours", totalHours);
 	    }
+		
+		double overtime = attendanceDAO.getMonthlyOvertimeHours(currentUser.getId());
+		request.setAttribute("monthlyOvertime", overtime);
+
+		if (overtime > 40) {
+		    request.setAttribute("overtimeWarning", "⚠️ 今月の残業時間が40時間を超えています！");
+		}
+
 
         List<Attendance> allRecords = attendanceDAO.findByUserId(user.getId());
 
@@ -67,7 +74,6 @@ public class EmployeeMenuServlet extends HttpServlet {
         try {
             page = Integer.parseInt(request.getParameter("page"));
         } catch (NumberFormatException e) {
-            // 無指定なら1ページ目
         }
 
         int start = (page - 1) * recordsPerPage;
@@ -87,4 +93,6 @@ public class EmployeeMenuServlet extends HttpServlet {
         RequestDispatcher rd = request.getRequestDispatcher("jsp/employee_menu.jsp");
         rd.forward(request, response);
     }
+    
+    
 }

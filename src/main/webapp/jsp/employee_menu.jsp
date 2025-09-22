@@ -39,7 +39,9 @@
 			        <option value="week" <c:if test="${ selectedPeriod == 'week' }">selected</c:if>>今週（日〜土）</option>
 			        <option value="month" <c:if test="${ selectedPeriod == 'month' }">selected</c:if>>今月</option>
 			    </select>
-			    <input type="submit" value="表示">
+			    <div class="button-group">
+			    	<input type="submit" value="表示">
+			    </div>
 			</form>
 
 			<c:if test="${ not empty totalHours }">
@@ -47,6 +49,12 @@
 			        <fmt:formatNumber value="${ totalHours }" type="number" maxFractionDigits="2" /> 時間
 			    </p>
 			</c:if>
+			
+			<p>今月の残業時間: ${ monthlyOvertime } 時間</p>
+			<c:if test="${ not empty overtimeWarning }">
+			    <p class="warning">${ overtimeWarning }</p>
+			</c:if>
+			
 			
 			<h2>あなたの勤怠履歴</h2>
 			<table>

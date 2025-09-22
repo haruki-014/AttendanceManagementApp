@@ -293,43 +293,79 @@ public class AttendanceDAO {
 //        return result;
 //    }
     
+    public double getTotalHoursToday(int userId) {
+    	String sql = 
+    			"SELECT SUM(EXTRACT(EPOCH FROM (check_out_time - check_in_time))/3600) AS hours " +
+    			"FROM attendance " +
+    			"WHERE user_id = ? AND DATE(check_in_time) = CURRENT_DATE";
+    	return getTotalHours(userId, sql);
+    }
 
-        public double getTotalHoursToday(int userId) {
-            String sql = "SELECT SUM(EXTRACT(EPOCH FROM (check_out_time - check_in_time))/3600) AS hours " +
-                         "FROM attendance " +
-                         "WHERE user_id = ? AND DATE(check_in_time) = CURRENT_DATE";
-            return getTotalHours(userId, sql);
-        }
+    public double getTotalHoursThisWeek(int userId) {
+        String sql =
+        		"SELECT SUM(EXTRACT(EPOCH FROM (check_out_time - check_in_time))/3600) AS hours " +
+                "FROM attendance " +
+                "WHERE user_id = ? AND DATE(check_in_time) >= date_trunc('week', CURRENT_DATE) " +
+                "AND DATE(check_in_time) < date_trunc('week', CURRENT_DATE) + INTERVAL '7 day'";
+        return getTotalHours(userId, sql);
+    }
 
-        public double getTotalHoursThisWeek(int userId) {
-            String sql = "SELECT SUM(EXTRACT(EPOCH FROM (check_out_time - check_in_time))/3600) AS hours " +
-                         "FROM attendance " +
-                         "WHERE user_id = ? AND DATE(check_in_time) >= date_trunc('week', CURRENT_DATE) " +
-                         "AND DATE(check_in_time) < date_trunc('week', CURRENT_DATE) + INTERVAL '7 day'";
-            return getTotalHours(userId, sql);
-        }
+    public double getTotalHoursThisMonth(int userId) {
+        String sql =
+        		"SELECT SUM(EXTRACT(EPOCH FROM (check_out_time - check_in_time))/3600) AS hours " +
+                "FROM attendance " +
+                "WHERE user_id = ? AND DATE_TRUNC('month', check_in_time) = DATE_TRUNC('month', CURRENT_DATE)";
+        return getTotalHours(userId, sql);
+    }
 
-        public double getTotalHoursThisMonth(int userId) {
-            String sql = "SELECT SUM(EXTRACT(EPOCH FROM (check_out_time - check_in_time))/3600) AS hours " +
-                         "FROM attendance " +
-                         "WHERE user_id = ? AND DATE_TRUNC('month', check_in_time) = DATE_TRUNC('month', CURRENT_DATE)";
-            return getTotalHours(userId, sql);
-        }
-
-        private double getTotalHours(int userId, String sql) {
-            try (Connection conn = DBConnection.getConnection();
-                 PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setInt(1, userId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getDouble("hours");
-                    }
+    private double getTotalHours(int userId, String sql) {
+        try (Connection conn = DBConnection.getConnection();
+        		PreparedStatement ps = conn.prepareStatement(sql)) {
+        	ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                	return rs.getDouble("hours");
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
-            return 0.0;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return 0.0;
+    }
+    
+ // 月間残業時間を計算（1日8時間を超えた分を残業として加算）
+    public double getMonthlyOvertimeHours(int userId) {
+        int standardHoursPerDay = 8;
+
+        String sql =
+            "SELECT SUM(GREATEST(daily.hours - ?, 0)) AS overtime " +
+            "FROM (" +
+            "    SELECT DATE(check_in_time) AS work_date, " +
+            "           SUM(EXTRACT(EPOCH FROM (check_out_time - check_in_time)) / 3600) AS hours " +
+            "    FROM attendance " +
+            "    WHERE user_id = ? " +
+            "    AND DATE_TRUNC('month', check_in_time) = DATE_TRUNC('month', CURRENT_DATE) " +
+            "    AND check_out_time IS NOT NULL " +
+            "    GROUP BY DATE(check_in_time)" +
+            ") AS daily";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, standardHoursPerDay);
+            ps.setInt(2, userId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("overtime");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
+
 
 
 
