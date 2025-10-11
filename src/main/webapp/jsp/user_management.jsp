@@ -168,7 +168,7 @@
 								</form>
 							</td>
 							<td class="table-actions">
-								<a href="users?action=test&userName=${ u.userName }" class="button">編集</a>
+								<a href="users?action=test&userName=${ u.name }" class="button">編集</a>
 								<form action="users" method="post" style="display:inline;">
 									<input type="hidden" name="action" value="delete">
 									<input type="hidden" name="userName" value="${ u.userName }">

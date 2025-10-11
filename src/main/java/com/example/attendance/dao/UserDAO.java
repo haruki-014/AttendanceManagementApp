@@ -71,31 +71,7 @@ public class UserDAO {
         return null;
     }
     
-    public User findById(int id) {
-        String sql = "SELECT id, name, password, role, is_enabled FROM users WHERE id = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return new User(
-                    	rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("password"),
-                        rs.getString("role"),
-                        rs.getBoolean("is_enabled")
-                    );
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-
-
+    
     public boolean verifyPassword(Integer id, String password) {
         User user = findById(id);
 
