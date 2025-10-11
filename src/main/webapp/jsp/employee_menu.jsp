@@ -12,7 +12,9 @@
 	</head>
 	<body>
 		<div class="container">
+
 			<h1>従業員メニュー</h1>
+
 			<p>ようこそ、${ user.name }さん</p>
 			<p>社員番号: ${ user.id }</p>
 			

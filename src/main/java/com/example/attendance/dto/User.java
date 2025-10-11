@@ -1,7 +1,24 @@
 package com.example.attendance.dto;
 
+/* 
+ attendance_db=# \d users;
+                                      Table "public.users"
+   Column   |          Type          | Collation | Nullable |              Default              
+------------+------------------------+-----------+----------+-----------------------------------
+ id         | integer                |           | not null | nextval('users_id_seq'::regclass)
+ name       | character varying(50)  |           | not null | 
+ password   | character varying(255) |           | not null | 
+ role       | character varying(20)  |           | not null | 
+ is_enabled | boolean                |           |          | true
+Indexes:
+    "user_id" PRIMARY KEY, btree (id)
+Referenced by:
+    TABLE "attendance" CONSTRAINT "attendance_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id)
+ */
+
 public class User {
 	
+
 	private Integer id;
 	private String name;
 	private String password;
@@ -14,6 +31,7 @@ public class User {
 	}
 	
 	public User(Integer id, String name, String password, String role, boolean isEnabled, Position position) {
+
 		this.id = id;
 		this.name = name;
 		this.password = password;
@@ -29,6 +47,7 @@ public class User {
 	
 	public String getName() {
 		return name;
+
 	}
 	
 	public String getPassword() {
