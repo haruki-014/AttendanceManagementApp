@@ -5,7 +5,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>ユーザー管理</title>
+		<title>ユーザー管理画面</title>
 		<link rel="stylesheet" href="${ pageContext.request.contextPath }/style/style.css">
 		<%-- <link rel="stylesheet" href="${ pageContext.request.contextPath }/style/user_management.css"> --%>
 	</head>
