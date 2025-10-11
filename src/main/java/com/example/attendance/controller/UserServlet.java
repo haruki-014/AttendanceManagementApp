@@ -12,128 +12,187 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import com.example.attendance.dao.UserDAO;
+import com.example.attendance.dto.Position;
 import com.example.attendance.dto.User;
 
-/**
- * P73
- */
 @WebServlet("/users")
 public class UserServlet extends HttpServlet {
-	private final UserDAO userDAO = new UserDAO();
-	
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String action = request.getParameter("action");
-		HttpSession session = request.getSession(false);
+    private UserDAO userDAO;
+
+    @Override
+    public void init() throws ServletException {
+        userDAO = new UserDAO(); 
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+    	req.setCharacterEncoding("UTF-8");
+    	
+        String action = req.getParameter("action");
+        HttpSession session = req.getSession(false);
 		User currentUser = (User) session.getAttribute("user"); 
 		
-		// ユーザーが登録されていない or 役割がadminでなければ、ログイン画面に遷移	
-		if (currentUser == null || !"admin".equals(currentUser.getRole())) {
-			response.sendRedirect("login.jsp");
+		if (currentUser == null) {
+			resp.sendRedirect("/login");
 			return;
 		}
 		
-		String message = (String) session.getAttribute("successMessage");
-		if (message != null) {
-			request.setAttribute("successMessage", message);
-			session.removeAttribute("successMessage");
-		}
-		
-		if ("list".equals(action) || action == null) {
-			Collection<User> users = userDAO.getAllUsers();
-			request.setAttribute("users", users);
-			RequestDispatcher rd = request.getRequestDispatcher("/jsp/user_management.jsp");
-			rd.forward(request, response);
-			
-		} else if ("edit".equals(action)) {
-			String name = request.getParameter("name");
-			User user = userDAO.findByName(name);
-			request.setAttribute("userToEdit", user);
-			Collection<User> users = userDAO.getAllUsers();
-			request.setAttribute("users", users);
-			RequestDispatcher rd = request.getRequestDispatcher("/jsp/user_management.jsp");
-			rd.forward(request, response);
-			
-		} else {
-			response.sendRedirect("users?action=list");
-		}	
-	}
 
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.setCharacterEncoding("UTF-8");
-		String action = request.getParameter("action");
-		System.out.println(">>> doPost called, action=" + action);
-		HttpSession session = request.getSession(false);
-		
-		if (session == null) {
-		    System.out.println(">>> session is null");
-		} else {
-			System.out.println(">>> session is not null");
-		}
-		
+        if (action == null) {
+            action = "list";
+        }
+
+        switch (action) {
+            case "list":
+                listUsers(req, resp);
+                break;
+            case "edit":
+            	if ("admin".equals(currentUser.getRole())) {
+            		editUser(req, resp);
+            	} else {
+            		resp.sendRedirect("/login");
+            	}
+                break;
+            case "delete":
+            	if ("admin".equals(currentUser.getRole())) {
+            		deleteUser(req, resp);
+            	} else {
+            		resp.sendRedirect("/login");
+            	}
+                break;
+            default:
+                listUsers(req, resp);
+                break;
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+    	req.setCharacterEncoding("UTF-8");
+    	
+        String action = req.getParameter("action");
+        
+        System.out.println(action);
+        HttpSession session = req.getSession(false);
+
 		User currentUser = (User) session.getAttribute("user");
-		
+
 		if (currentUser == null || !"admin".equals(currentUser.getRole())) {
-			response.sendRedirect(request.getContextPath() + "login.jsp");
+
+			resp.sendRedirect("/login");
 			return;
 		}
 		
-		if ("add".equals(action)) {
-			String name = request.getParameter("name");
-			String password = request.getParameter("password");
-			String role = request.getParameter("role");
-			
-			if (userDAO.findByName(name) == null) {
-				userDAO.addUser(
-						new User(
-								name, password, role
-							)
-						);
-				session.setAttribute("successMessage", "ユーザーを追加しました");
-				
-			} else {
-				request.setAttribute("errorMessage", "このユーザーIDは既に存在します");
-			}
-			
-		} else if ("update".equals(action)) {
-			int id = Integer.parseInt(request.getParameter("id"));
-			System.out.println(id);
-			String name = request.getParameter("name");
-			String role = request.getParameter("role");
-			boolean isEnabled = request.getParameter("enabled") != null;
-			
-			User existingUser = userDAO.findById(id);
-			
-			if (existingUser != null) {
-				userDAO.updateUser(
-						new User(id, name, existingUser.getPassword(), role, isEnabled)
-						);
-				session.setAttribute("successMessage", "ユーザー情報を更新しました");
-			}
-			
-		} else if ("delete".equals(action)) {
-			String name = request.getParameter("name");
-			userDAO.deleteUser(name);
-			session.setAttribute("successMessage", "ユーザーを削除しました");
-			
-		} else if ("reset_password".equals(action)) {
-			String name = request.getParameter("name");
-			String newPassword = request.getParameter("newPassword");
-			userDAO.resetPassword(name, newPassword);
-			session.setAttribute(
-					"successMessage", name + "のパスワードをリセットしました　新しいパスワードは" + newPassword + "です");
-			
-		} else if ("toggle_enabled".equals(action)) {
-			String name = request.getParameter("name");
-			boolean isEnabled = Boolean.parseBoolean(request.getParameter("enabled"));
-			System.out.println(name + isEnabled);
-			Boolean newEnabled = ! isEnabled;
-			userDAO.toggleUserEnabled(name, newEnabled);
-			session.setAttribute("successMessage", name + "のアカウントを" + (newEnabled ? "有効" : "無効") + "にしました");
-		}
-		
-		response.sendRedirect(request.getContextPath() + "/users?action=list");
-		
-	}
+        if (action == null) {
+            action = "add";
+        }
+
+        if ("delete".equals(action)) {
+            deleteUser(req, resp);
+            
+        } else if ("add".equals(action)) {
+            addUser(req, resp);
+            
+        } else if ("update".equals(action)) {
+            updateUser(req, resp);
+            
+        } else if ("toggle_enabled".equals(action)) {
+            toggleEnabled(req, resp);
+            
+        } else if ("reset_password".equals(action)) {
+            resetPassword(req, resp);
+            
+        } else {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+        }
+        
+    }
+
+    private void listUsers(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        Collection<User> users = userDAO.getAllUsers();
+        req.setAttribute("users", users);
+        RequestDispatcher rd = req.getRequestDispatcher("/jsp/user_management.jsp");
+        rd.forward(req, resp);
+    }
+
+    private void editUser(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        String idStr = req.getParameter("id");
+        System.out.println(idStr);
+        if (idStr != null) {
+        	System.out.println(idStr);
+            Integer id = Integer.parseInt(idStr);
+            User user = userDAO.findById(id);
+            req.setAttribute("userToEdit", user);
+        }
+        
+        Collection<User> users = userDAO.getAllUsers();
+        req.setAttribute("users", users);
+        
+        RequestDispatcher rd = req.getRequestDispatcher("/jsp/user_management.jsp");
+        rd.forward(req, resp);
+    }
+
+    private void addUser(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+        String name = req.getParameter("name");
+        String password = req.getParameter("password");
+        String role = req.getParameter("role");
+        boolean isEnabled = Boolean.parseBoolean(req.getParameter("isEnabled"));
+        Position position = Position.valueOf(req.getParameter("position")); 
+        User user = new User(null, name, password, role, isEnabled, position);
+        userDAO.addUser(user);
+
+        resp.sendRedirect("users?action=list");
+    }
+
+    private void updateUser(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+        Integer id = Integer.parseInt(req.getParameter("id"));
+        String password = req.getParameter("password");
+        String role = req.getParameter("role");
+        boolean isEnabled = Boolean.parseBoolean(req.getParameter("isEnabled"));
+        Position position = Position.valueOf(req.getParameter("position")); 
+
+        User user = new User(id, null, password, role, isEnabled, position);
+        userDAO.updateUser(user);
+
+        resp.sendRedirect("users?action=list");
+    }
+
+    private void deleteUser(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+        Integer id = Integer.parseInt(req.getParameter("id"));
+        userDAO.deleteUser(id);
+        resp.sendRedirect("users?action=list");
+    }
+
+    private void resetPassword(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+    	String idStr = req.getParameter("id");
+        String newPassword = req.getParameter("newPassword");
+
+        if (idStr == null || idStr.isEmpty() || newPassword == null || newPassword.isEmpty()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ユーザーID または パスワード がありません");
+            return;
+        }
+        
+        Integer id = Integer.parseInt(idStr);
+
+        userDAO.resetPassword(id, newPassword);
+
+        resp.sendRedirect("users?action=list");
+    }
+    
+    private void toggleEnabled(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    	Integer id = Integer.parseInt(req.getParameter("id"));
+		boolean isEnabled = Boolean.parseBoolean(req.getParameter("isEnabled"));
+		userDAO.toggleUserEnabled(id, !isEnabled);
+
+		resp.sendRedirect("users?action=list");
+    }
+	
 }

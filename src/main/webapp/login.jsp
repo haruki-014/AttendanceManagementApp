@@ -13,8 +13,32 @@
 			<h1>勤怠管理システム画面</h1>
 			<form action="login" method="post">
 				<p>
-					<label for="userName">ユーザーID: </label>
-					<input type="text" id="name" name="name" placeholder="yamadatarou" autofocus required>
+					<label for="userId">ユーザーID: </label>
+					<input type="text" id="userId" name="userId" onblur="fetchUserName()" required />
+					<script type="text/javascript">document.getElementById("userId").focus()</script>
+					<script>
+						function fetchUserName() {
+						    const userId = document.getElementById("userId").value;
+						    if (!userId) {
+						        document.getElementById("userNameDisplay").innerText = "";
+						        return;
+						    }
+						
+						    fetch("getUserName?userId=" + encodeURIComponent(userId))
+						        .then(response => response.text())
+						        .then(name => {
+						            if (name) {
+						                document.getElementById("userNameDisplay").innerText =
+						                    "このIDのユーザー名: " + name;
+						            } else {
+						                document.getElementById("userNameDisplay").innerText =
+						                    "ユーザーが見つかりません";
+						            }
+						        })
+						        .catch(error => console.error("Error:", error));
+						}
+					</script>
+					<p id="userNameDisplay" style="color: blue;"></p>
 				</p>
 				<p>
 					<label for="password">パスワード: </label>
